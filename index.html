@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 工作流 SOP — Multi-Device Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-2: #232736;
+    --border: #2e3345;
+    --text: #e2e4eb;
+    --text-dim: #8b8fa3;
+    --accent: #f97316;
+    --accent-soft: rgba(249, 115, 22, 0.12);
+    --green: #22c55e;
+    --green-soft: rgba(34, 197, 94, 0.12);
+    --blue: #3b82f6;
+    --blue-soft: rgba(59, 130, 246, 0.12);
+    --purple: #a855f7;
+    --purple-soft: rgba(168, 85, 247, 0.12);
+    --red: #ef4444;
+    --red-soft: rgba(239, 68, 68, 0.12);
+    --yellow: #eab308;
+    --yellow-soft: rgba(234, 179, 8, 0.12);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Noto Sans SC', sans-serif;
+    --display: 'Playfair Display', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .header-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-family: var(--display);
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--text), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header .subtitle {
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+
+  .header .date {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 16px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+  }
+
+  .toc h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .toc a {
+    display: block;
+    color: var(--text);
+    text-decoration: none;
+    padding: 6px 0;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+
+  .toc a:hover { color: var(--accent); }
+  .toc a .num { color: var(--accent); font-family: var(--mono); margin-right: 8px; }
+
+  /* Sections */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section h2 .icon {
+    font-size: 28px;
+  }
+
+  .section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 28px 0 12px;
+    color: var(--text);
+  }
+
+  .section p {
+    margin-bottom: 14px;
+    color: var(--text-dim);
+  }
+
+  /* Info Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  .card.accent { border-left: 3px solid var(--accent); }
+  .card.green { border-left: 3px solid var(--green); }
+  .card.blue { border-left: 3px solid var(--blue); }
+  .card.purple { border-left: 3px solid var(--purple); }
+  .card.red { border-left: 3px solid var(--red); }
+  .card.yellow { border-left: 3px solid var(--yellow); }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card.accent .card-title { color: var(--accent); }
+  .card.green .card-title { color: var(--green); }
+  .card.blue .card-title { color: var(--blue); }
+  .card.purple .card-title { color: var(--purple); }
+  .card.red .card-title { color: var(--red); }
+  .card.yellow .card-title { color: var(--yellow); }
+
+  .card p { font-size: 14px; margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* Code blocks */
+  pre {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0 16px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--green);
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--surface-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  /* Device badges */
+  .device {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  .device.mac { background: var(--blue-soft); color: var(--blue); }
+  .device.wsl { background: var(--green-soft); color: var(--green); }
+  .device.phone { background: var(--purple-soft); color: var(--purple); }
+  .device.web { background: var(--yellow-soft); color: var(--yellow); }
+
+  /* Flow diagram */
+  .flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin: 20px 0;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+  }
+
+  .flow-box {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+  }
+
+  .flow-arrow {
+    color: var(--text-dim);
+    font-size: 18px;
+  }
+
+  .flow-box.mac-box { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+  .flow-box.wsl-box { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+  .flow-box.phone-box { background: var(--purple-soft); border-color: var(--purple); color: var(--purple); }
+  .flow-box.git-box { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  /* Scenario blocks */
+  .scenario {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 20px 0;
+  }
+
+  .scenario-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .scenario-num {
+    background: var(--accent);
+    color: var(--bg);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .scenario-title {
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .step {
+    display: flex;
+    gap: 12px;
+    margin: 12px 0;
+    align-items: flex-start;
+  }
+
+  .step-marker {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+
+  .step-content {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* Architecture diagram */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .arch-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .arch-node .emoji { font-size: 32px; margin-bottom: 8px; }
+  .arch-node .name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .arch-node .desc { font-size: 12px; color: var(--text-dim); }
+
+  .arch-node.primary { border-color: var(--accent); }
+
+  /* Session table */
+  .session-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  .session-table th {
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .session-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  /* Checklist */
+  .checklist {
+    margin: 16px 0;
+  }
+
+  .check-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--text-dim);
+    align-items: flex-start;
+  }
+
+  .check-item .check {
+    color: var(--green);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .check-item.pending .check { color: var(--yellow); }
+
+  /* Footer */
+  .footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: var(--mono);
+  }
+
+  @media (max-width: 640px) {
+    .header h1 { font-size: 28px; }
+    .arch { grid-template-columns: 1fr; }
+    .flow-row { flex-direction: column; align-items: flex-start; }
+    .container { padding: 20px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-tag">Internal SOP</div>
+    <h1>Claude Code 多设备工作流</h1>
+    <p class="subtitle">Session管理 · 跨设备同步 · 工作流SOP</p>
+    <p class="date">2026-03-23 · Howard</p>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>目录</h2>
+    <a href="#env"><span class="num">01</span> 环境架构</a>
+    <a href="#session"><span class="num">02</span> Session 核心机制</a>
+    <a href="#workflow"><span class="num">03</span> 工作流 SOP（五大场景）</a>
+    <a href="#commands"><span class="num">04</span> 快捷命令速查</a>
+    <a href="#sync"><span class="num">05</span> Git 同步策略</a>
+    <a href="#troubleshoot"><span class="num">06</span> 故障排查</a>
+    <a href="#log"><span class="num">07</span> 操作日志（2026-03-23）</a>
+  </div>
+
+  <!-- 01 环境架构 -->
+  <div class="section" id="env">
+    <h2><span class="icon">🏗️</span> 01 · 环境架构</h2>
+
+    <div class="arch">
+      <div class="arch-node primary">
+        <div class="emoji">🖥️</div>
+        <div class="name">异地台式机 (WSL)</div>
+        <div class="desc">24h在线 · 16线程 · 1TB<br>主力执行器<br>Tailscale: [YOUR_IP]</div>
+      </div>
+      <div class="arch-node">
+        <div class="emoji">💻</div>
+        <div class="name">MacBook Pro</div>
+        <div class="desc">随身携带 · 移动办公<br>日常开发主力<br>Tailscale组网</div>
+      </div>
+      <div class="arch-node">
+        <div class="emoji">📱</div>
+        <div class="name">手机端</div>
+        <div class="desc">紧急任务 · 监控<br>SSH到Mac或台式机<br>claude.ai网页</div>
+      </div>
+    </div>
+
+    <div class="card accent">
+      <div class="card-title">⚠️ Pro Plan 限制</div>
+      <p>所有设备共享同一个账号的rate limit。同时跑多个session会更快消耗配额。建议同一时间只跑1-2个活跃session。</p>
+    </div>
+
+    <h3>目录结构</h3>
+    <pre># 台式机 WSL
+~/wsl-workspace/              ← 所有项目的根目录
+├── Amazon-agents/            ← 亚马逊代理项目 (git → GitHub)
+├── dino-finder/
+├── haha-photos/
+└── matching-game/
+
+# Session 存储（自动生成，不要手动修改）
+~/.claude/projects/
+├── -home-[user]/                              ← home目录session
+├── -home-[user]-wsl-workspace/                ← wsl-workspace根目录session
+└── -home-[user]-wsl-workspace-Amazon-agents/  ← Amazon-agents项目session
+
+# MacBook
+~/Documents/Amazon-agents/    ← 项目文件
+~/.claude/projects/           ← Mac本地session</pre>
+  </div>
+
+  <!-- 02 Session 核心机制 -->
+  <div class="section" id="session">
+    <h2><span class="icon">📦</span> 02 · Session 核心机制</h2>
+
+    <div class="card blue">
+      <div class="card-title">🔑 核心规则</div>
+      <p><strong>Session 绑定项目绝对路径。</strong>在 <code>/home/[user]/wsl-workspace/Amazon-agents</code> 下创建的session，只能在这个目录下 <code>claude --resume</code> 找到。</p>
+    </div>
+
+    <h3>Session存储路径编码规则</h3>
+    <p>路径中的 <code>/</code> 被替换为 <code>-</code>：</p>
+    <pre>/home/[user]/wsl-workspace/Amazon-agents
+→ ~/.claude/projects/-home-[user]-wsl-workspace-Amazon-agents/</pre>
+
+    <h3>Session类型对比</h3>
+    <table class="session-table">
+      <tr><th>类型</th><th>存储位置</th><th>可否跨设备</th><th>管理方式</th></tr>
+      <tr><td><span class="device wsl">Local</span></td><td>本机 ~/.claude/projects/</td><td>需手动迁移</td><td>CLI / VSCode Local tab</td></tr>
+      <tr><td><span class="device web">Web</span></td><td>Anthropic云端</td><td>任意浏览器</td><td>claude.ai Code tab</td></tr>
+    </table>
+
+    <h3>关键命令</h3>
+    <table class="session-table">
+      <tr><th>命令</th><th>作用</th></tr>
+      <tr><td><code>claude</code></td><td>在当前目录新建session</td></tr>
+      <tr><td><code>claude --continue</code></td><td>继续当前目录最近的session</td></tr>
+      <tr><td><code>claude --resume</code></td><td>选择器浏览所有session</td></tr>
+      <tr><td><code>claude --resume &lt;session-id&gt;</code></td><td>恢复指定session</td></tr>
+      <tr><td><code>claude -p "任务"</code></td><td>Headless模式，执行完退出（适合自动化）</td></tr>
+      <tr><td><code>/clear</code></td><td>session内清空上下文，开始新对话</td></tr>
+      <tr><td><code>/init</code></td><td>生成项目CLAUDE.md</td></tr>
+      <tr><td><code>/memory</code></td><td>编辑CLAUDE.md记忆文件</td></tr>
+    </table>
+  </div>
+
+  <!-- 03 工作流 SOP -->
+  <div class="section" id="workflow">
+    <h2><span class="icon">🔄</span> 03 · 工作流 SOP（五大场景）</h2>
+
+    <!-- 场景1 -->
+    <div class="scenario">
+      <div class="scenario-header">
+        <div class="scenario-num">1</div>
+        <div class="scenario-title">MacBook上开发，台式机后台执行长任务</div>
+      </div>
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-box mac-box">💻 MacBook SSH到台式机</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box wsl-box">🖥️ cd项目目录</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box wsl-box">claude "你的任务"</div>
+        </div>
+      </div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">MacBook终端：<code>ssh user@[YOUR_TAILSCALE_IP]</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">进入项目：<code>cd ~/wsl-workspace/Amazon-agents</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">开tmux（防断连）：<code>tmux new -s work</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">启动Claude：<code>claude</code> 或 <code>ccr</code>（继续上次session）</div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">断开SSH不影响运行，回来用 <code>tmux attach -t work</code></div></div>
+    </div>
+
+    <!-- 场景2 -->
+    <div class="scenario">
+      <div class="scenario-header">
+        <div class="scenario-num">2</div>
+        <div class="scenario-title">MacBook本地跑临时session</div>
+      </div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">直接在MacBook项目目录：<code>cd ~/Documents/Amazon-agents && claude</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">Session保存在MacBook本地的 <code>~/.claude/projects/</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content"><strong>产出的代码改动</strong>通过git同步：<code>git add . && git commit -m "改动说明" && git push</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">台式机拉取：<code>cd ~/wsl-workspace/Amazon-agents && git pull</code></div></div>
+
+      <div class="card yellow" style="margin-top: 16px">
+        <div class="card-title">💡 如果后来想把session转到远端</div>
+        <p>Session本身无法远程"转移"。但代码改动可以通过git同步。最佳做法：把关键决策写入CLAUDE.md，然后在台式机上开新session继续。</p>
+      </div>
+    </div>
+
+    <!-- 场景3 -->
+    <div class="scenario">
+      <div class="scenario-header">
+        <div class="scenario-num">3</div>
+        <div class="scenario-title">多个session并行</div>
+      </div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">每个项目在自己的目录下有独立session，互不影响</div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">用tmux多窗口管理：<code>tmux new -s amazon</code> / <code>tmux new -s kidsgame</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">切换：<code>tmux switch -t amazon</code> 或 <code>Ctrl+B</code> 然后 <code>s</code> 选择</div></div>
+
+      <div class="card red" style="margin-top: 16px">
+        <div class="card-title">⚡ Pro Plan注意</div>
+        <p>同时活跃的session共享rate limit。建议同时不超过2个活跃session。一个在跑长任务时可以开另一个做快速查询。</p>
+      </div>
+    </div>
+
+    <!-- 场景4 -->
+    <div class="scenario">
+      <div class="scenario-header">
+        <div class="scenario-num">4</div>
+        <div class="scenario-title">手机端紧急任务</div>
+      </div>
+      <div class="card purple">
+        <div class="card-title">📱 推荐方案：SSH到台式机</div>
+        <p>手机装SSH客户端（Termius / iSH / 系统终端），连接台式机Tailscale IP，在tmux里操作。代码和session都留在台式机上。</p>
+      </div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">手机SSH：<code>ssh user@[YOUR_TAILSCALE_IP]</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">恢复tmux：<code>tmux attach -t work</code></div></div>
+      <div class="step"><div class="step-marker"></div><div class="step-content">或者开新session：<code>cca</code>（进入Amazon-agents并启动claude）</div></div>
+
+      <div class="card yellow" style="margin-top: 16px">
+        <div class="card-title">🌐 备选：claude.ai网页端</div>
+        <p>手机浏览器打开 claude.ai → Code tab → 可以派发Web session。但Web session和Local session独立，不互通。适合完全独立的小任务。</p>
+      </div>
+    </div>
+
+    <!-- 场景5 -->
+    <div class="scenario">
+      <div class="scenario-header">
+        <div class="scenario-num">5</div>
+        <div class="scenario-title">定期备份Mac session到台式机</div>
+      </div>
+      <pre># MacBook上打包
+cd ~/.claude/projects
+tar -czf ~/claude-sessions-$(date +%Y%m%d).tar.gz -- -Users-[macuser]*
+
+# 传到台式机
+scp ~/claude-sessions-$(date +%Y%m%d).tar.gz user@[YOUR_TAILSCALE_IP]:~/backups/
+
+# 台式机上保存（纯存档，不做路径映射）
+mkdir -p ~/backups
+# 文件已在~/backups下，按日期归档</pre>
+    </div>
+  </div>
+
+  <!-- 04 快捷命令 -->
+  <div class="section" id="commands">
+    <h2><span class="icon">⌨️</span> 04 · 快捷命令速查</h2>
+
+    <p>已配置在台式机WSL的 <code>~/.bashrc</code> 中：</p>
+
+    <table class="session-table">
+      <tr><th>Alias</th><th>实际命令</th><th>用途</th></tr>
+      <tr><td><code>cc</code></td><td><code>claude</code></td><td>当前目录新建session</td></tr>
+      <tr><td><code>ccr</code></td><td><code>claude --continue</code></td><td>继续最近session</td></tr>
+      <tr><td><code>ccs</code></td><td><code>claude --resume</code></td><td>选择历史session</td></tr>
+      <tr><td><code>cca</code></td><td><code>cd ~/wsl-workspace/Amazon-agents && claude</code></td><td>直接进入Amazon项目</td></tr>
+    </table>
+
+    <h3>tmux常用操作</h3>
+    <table class="session-table">
+      <tr><th>命令</th><th>作用</th></tr>
+      <tr><td><code>tmux new -s 名字</code></td><td>新建命名session</td></tr>
+      <tr><td><code>tmux attach -t 名字</code></td><td>恢复session</td></tr>
+      <tr><td><code>tmux ls</code></td><td>列出所有session</td></tr>
+      <tr><td><code>Ctrl+B → d</code></td><td>断开（不关闭）</td></tr>
+      <tr><td><code>Ctrl+B → s</code></td><td>切换session</td></tr>
+    </table>
+  </div>
+
+  <!-- 05 Git 同步 -->
+  <div class="section" id="sync">
+    <h2><span class="icon">🔀</span> 05 · Git 同步策略</h2>
+
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-box mac-box">MacBook改代码</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box git-box">git push</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box wsl-box">台式机 git pull</div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-box wsl-box">台式机改代码</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box git-box">git push</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box mac-box">MacBook git pull</div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">✅ 记住：代码通过Git同步，Session不同步</div>
+      <p>两台机器各自维护自己的session。关键上下文写入项目根目录的 <code>CLAUDE.md</code>，这样不管在哪台机器开新session，Claude都能读到。</p>
+    </div>
+
+    <h3>Git配置（台式机WSL）</h3>
+    <pre>git config --global user.name "[your-github-username]"
+git config --global user.email "your@email.com"
+git config --global init.defaultBranch main
+
+# GitHub CLI已配置
+gh auth status  # ✓ Logged in to [your-github-account]</pre>
+
+    <h3>项目仓库</h3>
+    <table class="session-table">
+      <tr><th>项目</th><th>仓库</th><th>状态</th></tr>
+      <tr><td>Amazon-agents</td><td>github.com/[your-account]/Amazon-agents (private)</td><td>✅ 已推送</td></tr>
+    </table>
+  </div>
+
+  <!-- 06 故障排查 -->
+  <div class="section" id="troubleshoot">
+    <h2><span class="icon">🔧</span> 06 · 故障排查</h2>
+
+    <div class="card red">
+      <div class="card-title">❌ "No conversation found with session ID: xxx"</div>
+      <p><strong>原因：</strong>Session元数据被索引但JSONL文件未写入成功。常见于手机远程派任务网络中断时。</p>
+      <p><strong>解决：</strong>这些session不可恢复。在VSCode Local tab hover删除，或用命令行删除小于1KB的JSONL文件：</p>
+      <pre>find ~/.claude/projects/ -name "*.jsonl" -size -100c -delete</pre>
+    </div>
+
+    <div class="card yellow">
+      <div class="card-title">⚠️ VSCode Local tab显示 "No sessions yet"</div>
+      <p><strong>原因：</strong>VSCode没有打开项目文件夹（显示欢迎页）。Session绑定目录，需要先 File → Open Folder 打开项目。</p>
+    </div>
+
+    <div class="card yellow">
+      <div class="card-title">⚠️ Web session无法在VSCode Local tab管理</div>
+      <p>Web session存在Anthropic云端，只能在 claude.ai 网页或VSCode的 Web tab 中管理。与Local session完全独立。</p>
+    </div>
+
+    <div class="card blue">
+      <div class="card-title">💡 macOS垃圾文件（.DS_Store / ._*）</div>
+      <p>从Mac传文件到Linux时会带入。清理方法：</p>
+      <pre>find . -name '.DS_Store' -delete
+find . -name '._*' -delete</pre>
+      <p>项目 <code>.gitignore</code> 中已配置忽略。</p>
+    </div>
+
+    <div class="card blue">
+      <div class="card-title">💡 Session跨机器迁移</div>
+      <p>打包 <code>~/.claude/projects/</code>，scp到目标机器，重命名目录以匹配新的绝对路径编码。但官方建议：与其搬session，不如把上下文写入 CLAUDE.md，在新机器开新session。</p>
+    </div>
+  </div>
+
+  <!-- 07 操作日志 -->
+  <div class="section" id="log">
+    <h2><span class="icon">📋</span> 07 · 操作日志（2026-03-23）</h2>
+
+    <div class="checklist">
+      <div class="check-item"><span class="check">✅</span> 理清Claude Code session存储机制（绑定项目绝对路径，编码规则）</div>
+      <div class="check-item"><span class="check">✅</span> 诊断 "No conversation found" 错误原因（网络中断导致JSONL未写入）</div>
+      <div class="check-item"><span class="check">✅</span> MacBook session打包并scp到台式机WSL</div>
+      <div class="check-item"><span class="check">✅</span> Session文件路径重映射（-Users-[macuser] → -home-[user]）</div>
+      <div class="check-item"><span class="check">✅</span> Amazon-agents项目代码从MacBook迁移到台式机</div>
+      <div class="check-item"><span class="check">✅</span> 验证台式机上 claude --resume 可以看到迁移的session</div>
+      <div class="check-item"><span class="check">✅</span> 清理坏session（97B空文件、macOS ._元数据文件）</div>
+      <div class="check-item"><span class="check">✅</span> 配置shell alias（cc/ccr/ccs/cca）</div>
+      <div class="check-item"><span class="check">✅</span> 配置git全局设置（user.name/email/defaultBranch）</div>
+      <div class="check-item"><span class="check">✅</span> 初始化Amazon-agents为git仓库并推送到GitHub (private)</div>
+      <div class="check-item"><span class="check">✅</span> 创建.gitignore排除macOS垃圾文件</div>
+      <div class="check-item"><span class="check">✅</span> WSL磁盘空间确认（1TB，已用3.3G）</div>
+      <div class="check-item"><span class="check">✅</span> 设计多设备工作流SOP</div>
+      <div class="check-item pending"><span class="check">⏳</span> 飞书 → Claude Code headless自动化（未来优先级）</div>
+      <div class="check-item pending"><span class="check">⏳</span> claude remote-control 配置（非必须）</div>
+      <div class="check-item pending"><span class="check">⏳</span> 各项目 /init 生成CLAUDE.md</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Generated by Claude · 2026-03-23
+  </div>
+
+</div>
+</body>
+</html>
