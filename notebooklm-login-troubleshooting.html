@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotebookLM 无法登录与区域限制排查记录</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --bg2: #111827;
+      --bg3: #1a2235;
+      --card: #151d2e;
+      --border: #2a3650;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --accent: #f59e0b;
+      --accent2: #d97706;
+      --green: #34d399;
+      --green-bg: rgba(52, 211, 153, 0.08);
+      --amber: #fbbf24;
+      --amber-bg: rgba(251, 191, 36, 0.08);
+      --coral: #fb7185;
+      --coral-bg: rgba(251, 113, 133, 0.08);
+      --purple: #a78bfa;
+      --purple-bg: rgba(167, 139, 250, 0.08);
+      --cyan: #22d3ee;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 300;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text3);
+      text-decoration: none;
+      font-size: 13px;
+      margin-bottom: 32px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    header {
+      text-align: center;
+      padding: 40px 0 32px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+    header .icon { font-size: 48px; margin-bottom: 12px; }
+    header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--coral));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    header .subtitle { color: var(--text3); font-size: 14px; }
+    header .date { color: var(--text3); font-size: 13px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    nav.toc h2 { font-size: 13px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    nav.toc a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+      border-bottom: 1px solid rgba(42, 54, 80, 0.5);
+    }
+    nav.toc a:last-child { border-bottom: none; }
+    nav.toc a:hover { color: var(--accent); }
+    nav.toc .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    section { margin-bottom: 48px; }
+    section h2 {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .status-done { background: var(--green-bg); color: var(--green); }
+    .status-warn { background: var(--amber-bg); color: var(--amber); }
+    .status-issue { background: var(--coral-bg); color: var(--coral); }
+    .status-info { background: var(--purple-bg); color: var(--purple); }
+
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      transition: border-color 0.2s;
+    }
+    .info-card:hover { border-color: var(--accent); }
+    .info-card .label { font-size: 12px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-card .value { font-size: 15px; font-weight: 400; }
+    .info-card .detail { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    .step-list { counter-reset: step; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .step:hover { border-color: rgba(245, 158, 11, 0.3); }
+    .step-header {
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      user-select: none;
+    }
+    .step-header::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .step-header h3 { font-size: 15px; font-weight: 500; flex: 1; }
+    .step-header .arrow { color: var(--text3); transition: transform 0.2s; font-size: 14px; }
+    .step.open .step-header .arrow { transform: rotate(90deg); }
+    .step-body { display: none; padding: 0 20px 20px 62px; }
+    .step.open .step-body { display: block; }
+    .step-body p { color: var(--text2); font-size: 14px; margin-bottom: 10px; line-height: 1.7; }
+    .step-body .highlight {
+      background: var(--amber-bg);
+      border-left: 3px solid var(--amber);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 10px 0;
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .flow-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .flow-table thead th {
+      background: var(--bg3);
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border);
+    }
+    .flow-table thead th:first-child { border-radius: 8px 0 0 0; }
+    .flow-table thead th:last-child { border-radius: 0 8px 0 0; }
+    .flow-table tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      vertical-align: top;
+    }
+    .flow-table tbody tr:last-child td { border-bottom: none; }
+    .flow-table tbody tr:hover td { background: rgba(245, 158, 11, 0.03); }
+    .flow-table .step-num {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .alert {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 16px 0;
+      align-items: flex-start;
+    }
+    .alert .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .alert-success { background: var(--green-bg); border: 1px solid rgba(52, 211, 153, 0.2); }
+    .alert-warn { background: var(--amber-bg); border: 1px solid rgba(251, 191, 36, 0.2); }
+    .alert-danger { background: var(--coral-bg); border: 1px solid rgba(251, 113, 133, 0.2); }
+
+    .kv { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+    .kv .k { color: var(--text3); min-width: 100px; flex-shrink: 0; }
+    .kv .v { color: var(--text2); }
+
+    .tips { list-style: none; padding: 0; }
+    .tips li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .tips li:last-child { border-bottom: none; }
+    .tips li .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--bg3);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--bg3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--cyan);
+    }
+
+    pre {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 13px;
+      color: var(--cyan);
+    }
+
+    footer {
+      text-align: center;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      color: var(--text3);
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 20px 16px 60px; }
+      header h1 { font-size: 20px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .flow-table { font-size: 12px; }
+      .flow-table thead th, .flow-table tbody td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="index.html">← 返回目录</a>
+
+    <header>
+      <div class="icon">🔒</div>
+      <h1>NotebookLM 无法登录与区域限制排查记录</h1>
+      <div class="subtitle">代理配置 · WebRTC 泄露封堵 · DNS 缓存清除</div>
+      <div class="date">2026-03-25</div>
+    </header>
+
+    <nav class="toc">
+      <h2>目录</h2>
+      <a href="#background"><span class="dot" style="background:var(--coral)"></span>问题背景</a>
+      <a href="#root-cause"><span class="dot" style="background:var(--amber)"></span>核心原因分析</a>
+      <a href="#solution"><span class="dot" style="background:var(--green)"></span>最终解决方案与操作步骤</a>
+      <a href="#tun-dns"><span class="dot" style="background:var(--purple)"></span>TUN 模式与 DNS 死锁避坑</a>
+      <a href="#windows-wsl"><span class="dot" style="background:var(--cyan)"></span>Windows 环境补充建议（WSL 用户）</a>
+    </nav>
+
+    <!-- 问题背景 -->
+    <section id="background">
+      <h2>📌 问题背景 <span class="badge status-issue">ISSUE</span></h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="label">设备环境</div>
+          <div class="value">MacBook Pro</div>
+          <div class="detail">后续涉及 Windows + WSL 辅助环境</div>
+        </div>
+        <div class="info-card">
+          <div class="label">代理工具</div>
+          <div class="value">v2rayN</div>
+        </div>
+        <div class="info-card">
+          <div class="label">故障目标</div>
+          <div class="value">NotebookLM Web App</div>
+          <div class="detail">notebooklm.google.com</div>
+        </div>
+      </div>
+      <div class="alert alert-danger">
+        <span class="icon">🚨</span>
+        <div>
+          通过 Chrome 映射的 NotebookLM Web App 突然注销，重新打开后<strong>没有登录按钮</strong>，页面卡在产品介绍页，URL 尾部强制带有 <code>?location=unsupported</code> 参数。手机端同步测试时提示 <code>Could not load NotebookLM</code>。
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心原因分析 -->
+    <section id="root-cause">
+      <h2>🔍 核心原因分析 <span class="badge status-warn">ROOT CAUSE</span></h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:16px;">经过多轮排查，导致 NotebookLM 判定为"不支持地区"的原因主要有三个层级：</p>
+      <table class="flow-table">
+        <thead>
+          <tr>
+            <th>层级</th>
+            <th>原因</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="step-num">01</span></td>
+            <td>节点出口 IP 不合规</td>
+            <td>初期使用"广港 IEPL"节点，出口 IP 落在香港，而 NotebookLM 目前不支持香港地区。</td>
+          </tr>
+          <tr>
+            <td><span class="step-num">02</span></td>
+            <td>WebRTC 真实 IP 泄露（最隐蔽）</td>
+            <td>即使代理 IP 切换到了美国，桌面浏览器依然通过底层 WebRTC 协议向 Google 暴露了真实的 [公网IP]（带有中国标识），导致伪装失效。</td>
+          </tr>
+          <tr>
+            <td><span class="step-num">03</span></td>
+            <td>DNS 污染与缓存死锁</td>
+            <td>URL 携带的 <code>location=unsupported</code> 会被浏览器缓存，且部分 DNS 解析未走代理通道（如直连了 <code>223.5.5.5</code>），导致后续验证依然失败。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 解决方案 -->
+    <section id="solution">
+      <h2>🛠️ 最终解决方案与操作步骤 <span class="badge status-done">SOLVED</span></h2>
+      <div class="step-list">
+
+        <div class="step open">
+          <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+            <h3>更换合规的节点 IP</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <p>放弃使用香港或特征明显的国内中转节点。</p>
+            <div class="highlight">
+              切换至 <strong>美国 (US)</strong>、<strong>新加坡 (SG)</strong> 或 <strong>日本 (JP)</strong> 等原生支持地区的节点。
+            </div>
+          </div>
+        </div>
+
+        <div class="step open">
+          <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+            <h3>彻底封堵 WebRTC 泄露（关键步骤）</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <p>在不开启全局 TUN 模式的情况下，必须从浏览器层面阻止真实 IP 泄露。</p>
+            <ul class="tips">
+              <li>
+                <span class="num">1</span>
+                在 Chrome 应用商店安装 <strong>WebRTC Leak Prevent</strong> 插件。
+              </li>
+              <li>
+                <span class="num">2</span>
+                进入插件选项，将 <code>WebRTC IP handling policy</code> 设置为 <code>Disable non-proxied UDP (force proxy)</code>。默认选项无法完全隐藏公网 IP。
+              </li>
+              <li>
+                <span class="num">3</span>
+                访问 <code>browserleaks.com/webrtc</code> 验证，确保 <strong>Public IP Address</strong> 一栏显示为空白 (<code>-</code>) 或仅显示代理服务器的美国 IP。
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step open">
+          <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+            <h3>清除浏览器"错误记忆"</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <ul class="tips">
+              <li>
+                <span class="num">1</span>
+                彻底关闭所有 Chrome 窗口（包含无痕模式）以及映射生成的本地 Web App 窗口。
+              </li>
+              <li>
+                <span class="num">2</span>
+                按 <code>Command + Shift + Delete</code> 清除近期的 Cookie 和缓存。
+              </li>
+              <li>
+                <span class="num">3</span>
+                在浏览器地址栏<strong>手动输入纯净网址</strong> <code>https://notebooklm.google.com/</code>，切勿直接刷新带有 <code>unsupported</code> 尾缀的历史页面。
+              </li>
+              <li>
+                <span class="num">4</span>
+                成功看到 "Try NotebookLM" 并登录后，可重新生成桌面 Web App（PWA）。
+              </li>
+            </ul>
+            <div class="alert alert-success" style="margin-top:16px;">
+              <span class="icon">✅</span>
+              <div>按以上步骤操作后，NotebookLM 登录页面应正常显示，无 <code>?location=unsupported</code> 参数。</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TUN 模式与 DNS 死锁 -->
+    <section id="tun-dns">
+      <h2>⚠️ TUN 模式与 DNS 死锁避坑 <span class="badge status-warn">PITFALL</span></h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:16px;">在尝试解决网络问题时，曾尝试开启 v2rayN 的 <strong>TUN 模式</strong>，但引发了大量 <code>i/o timeout</code> 报错（如无法连接阿里 DNS <code>223.5.5.5:443</code>）。</p>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="label">根本原因</div>
+          <div class="value" style="font-size:14px;">路由环路（Routing Loop）</div>
+          <div class="detail" style="font-family:'Noto Sans SC',sans-serif;margin-top:8px;line-height:1.6;">TUN 模式强制接管所有网卡流量，代理工具在尝试通过直连网络解析节点域名或国内 DNS 时，流量又被绕回 TUN 虚拟网卡，形成死锁。</div>
+        </div>
+        <div class="info-card">
+          <div class="label">建议结论</div>
+          <div class="value" style="font-size:14px;">不推荐强制开启 TUN</div>
+          <div class="detail" style="font-family:'Noto Sans SC',sans-serif;margin-top:8px;line-height:1.6;">如果<strong>系统代理 + WebRTC 插件</strong>已能让网页版顺畅运行，无需开启 TUN 模式，以避免复杂的底层网络冲突。</div>
+        </div>
+      </div>
+      <div class="alert alert-warn">
+        <span class="icon">⚠️</span>
+        <div>TUN 模式适合需要代理全局流量（含非浏览器应用）的场景，但对于单纯解决 NotebookLM 访问问题，系统代理 + WebRTC 封堵已足够，引入 TUN 得不偿失。</div>
+      </div>
+    </section>
+
+    <!-- Windows/WSL 补充 -->
+    <section id="windows-wsl">
+      <h2>💻 Windows 环境补充建议 <span class="badge status-info">WSL</span></h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:16px;">针对 Windows + WSL 用户，若 Windows 环境下 NotebookLM 一切正常，但 WebRTC 仍有泄露风险：</p>
+      <div class="kv"><span class="k">现状风险</span><span class="v">已建立 Session，Google 暂未阻断，但属于"定时炸弹"——未来触发深度检测可能再次掉线。</span></div>
+      <div class="kv"><span class="k">处理建议</span><span class="v">在 Windows 的桌面浏览器中同样安装并严格配置 WebRTC 防泄露插件。</span></div>
+      <div class="kv"><span class="k">WSL 内部</span><span class="v">命令行操作不受浏览器 WebRTC 影响，无需特殊处理。</span></div>
+      <div class="alert alert-success" style="margin-top:16px;">
+        <span class="icon">✅</span>
+        <div>WSL 内的终端/CLI 工具走的是系统代理或直连，与浏览器 WebRTC 泄露问题完全独立，不需要额外配置。</div>
+      </div>
+    </section>
+
+    <footer>
+      Howard · Powered by Claude
+    </footer>
+  </div>
+
+  <script>
+    // Steps default open — toggle on click
+    document.querySelectorAll('.step-header').forEach(header => {
+      header.addEventListener('click', () => {
+        header.parentElement.classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>
