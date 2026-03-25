@@ -1,0 +1,38 @@
+[23:04:39] 👀 开始监控 /home/howard/wsl-workspace/my-docs/inbox
+[23:04:39]    将 .md 文件拖入该文件夹即可自动处理
+[23:04:39]    按 Ctrl+C 停止
+
+[23:05:11] 📄 发现新文件: notebooklm.md
+  📖 读取文件 notebooklm.md
+  🤖 调用 Claude（脱敏 + 转换 HTML）...
+
+❌ 处理失败: notebooklm-login-troubleshooting.html 已存在，跳过（如需覆盖请先手动删除该文件）
+[23:06:58] ❌ 处理失败，文件已移至 inbox/failed/
+[23:11:22] 📄 发现新文件: openclaw-jhclaw.md.md
+  📖 读取文件 openclaw-jhclaw.md.md
+  🤖 调用 Claude（脱敏 + 转换 HTML）...
+  ✓ 已生成 openclaw-multi-agent-network-setup.html
+  ✓ index.html 已更新
+  📤 推送到 GitHub...
+  ✓ 已推送，GitHub Pages 将在约 30 秒后更新
+
+✅ 完成: OpenClaw 3.8 多 Agent 架构与网络配置实战记录
+   文件: openclaw-multi-agent-network-setup.html
+   标签: AI, DevOps, Network
+[23:13:44] ❌ 异常: [Errno 2] No such file or directory: '/home/howard/wsl-workspace/my-docs/inbox/openclaw-jhclaw.md.md'
+[23:13:48] 📄 发现新文件: openclaw-jhclaw.md
+  📖 读取文件 openclaw-jhclaw.md
+  🤖 调用 Claude（脱敏 + 转换 HTML）...
+  ✓ 已生成 openclaw-multi-agent-network-config.html
+  ✓ index.html 已更新
+  📤 推送到 GitHub...
+  ✓ 已推送，GitHub Pages 将在约 30 秒后更新
+
+✅ 完成: OpenClaw 3.8 多 Agent 架构与网络配置实战记录
+   文件: openclaw-multi-agent-network-config.html
+   标签: AI, Network, Workflow
+[23:16:02] ✅ 完成，原文件已移至 inbox/processed/
+[23:33:16] 👀 开始监控 /home/howard/wsl-workspace/my-docs/inbox
+[23:33:16]    将 .md 文件拖入该文件夹即可自动处理
+[23:33:16]    按 Ctrl+C 停止
+
