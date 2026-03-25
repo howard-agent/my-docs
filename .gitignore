@@ -1,0 +1,5 @@
+inbox/processed/
+inbox/failed/
+inbox/watcher.log
+inbox/watcher.pid
+scripts/__pycache__/
