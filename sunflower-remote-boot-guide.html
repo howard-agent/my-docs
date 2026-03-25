@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>向日葵智能插座 C1 Pro · 远程开机排障实录</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --card: #151d2e;
+  --border: #2a3650;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --accent: #f59e0b;
+  --accent2: #d97706;
+  --green: #34d399;
+  --green-bg: rgba(52, 211, 153, 0.08);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251, 191, 36, 0.08);
+  --coral: #fb7185;
+  --coral-bg: rgba(251, 113, 133, 0.08);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167, 139, 250, 0.08);
+  --cyan: #22d3ee;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 300;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* Back link */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text3);
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 32px;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--accent); }
+
+header {
+  text-align: center;
+  padding: 40px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+header .icon { font-size: 48px; margin-bottom: 12px; }
+header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent), var(--coral));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+header .subtitle { color: var(--text3); font-size: 14px; }
+header .date { color: var(--text3); font-size: 13px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+/* TOC */
+nav.toc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 40px;
+}
+nav.toc h2 { font-size: 13px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+nav.toc a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+  border-bottom: 1px solid rgba(42, 54, 80, 0.5);
+}
+nav.toc a:last-child { border-bottom: none; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* Sections */
+section { margin-bottom: 48px; }
+section h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+section h2 .badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+.status-done { background: var(--green-bg); color: var(--green); }
+.status-warn { background: var(--amber-bg); color: var(--amber); }
+.status-issue { background: var(--coral-bg); color: var(--coral); }
+.status-info { background: var(--purple-bg); color: var(--purple); }
+
+/* Info cards */
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  transition: border-color 0.2s;
+}
+.info-card:hover { border-color: var(--accent); }
+.info-card .label { font-size: 12px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.info-card .value { font-size: 15px; font-weight: 400; }
+.info-card .detail { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+/* Steps */
+.step-list { counter-reset: step; }
+.step {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.step:hover { border-color: rgba(245, 158, 11, 0.3); }
+.step-header {
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  user-select: none;
+}
+.step-header::before {
+  counter-increment: step;
+  content: counter(step);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.step-header h3 { font-size: 15px; font-weight: 500; flex: 1; }
+.step-header .arrow { color: var(--text3); transition: transform 0.2s; font-size: 14px; }
+.step.open .step-header .arrow { transform: rotate(90deg); }
+.step-body { display: none; padding: 0 20px 20px 62px; }
+.step.open .step-body { display: block; }
+.step-body p { color: var(--text2); font-size: 14px; margin-bottom: 10px; line-height: 1.7; }
+.step-body .highlight {
+  background: var(--amber-bg);
+  border-left: 3px solid var(--amber);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+/* Flow table */
+.flow-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.flow-table thead th {
+  background: var(--bg3);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+}
+.flow-table thead th:first-child { border-radius: 8px 0 0 0; }
+.flow-table thead th:last-child { border-radius: 0 8px 0 0; }
+.flow-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+}
+.flow-table tbody tr:last-child td { border-bottom: none; }
+.flow-table tbody tr:hover td { background: rgba(245, 158, 11, 0.03); }
+.flow-table .step-num {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Alert */
+.alert {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 16px 0;
+  align-items: flex-start;
+}
+.alert .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alert-success { background: var(--green-bg); border: 1px solid rgba(52, 211, 153, 0.2); }
+.alert-warn { background: var(--amber-bg); border: 1px solid rgba(251, 191, 36, 0.2); }
+.alert-danger { background: var(--coral-bg); border: 1px solid rgba(251, 113, 133, 0.2); }
+
+/* Key-value inline */
+.kv { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+.kv .k { color: var(--text3); min-width: 100px; flex-shrink: 0; }
+.kv .v { color: var(--text2); }
+
+/* Tips list */
+.tips { list-style: none; padding: 0; }
+.tips li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tips li:last-child { border-bottom: none; }
+.tips li .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--bg3);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--cyan);
+}
+
+@media (max-width: 600px) {
+  .container { padding: 20px 16px 60px; }
+  header h1 { font-size: 20px; }
+  .info-grid { grid-template-columns: 1fr; }
+  .flow-table { font-size: 12px; }
+  .flow-table thead th, .flow-table tbody td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a href="index.html" class="back-link">← 返回文档首页</a>
+
+  <header>
+    <div class="icon">🌻</div>
+    <h1>向日葵智能插座 C1 Pro</h1>
+    <div class="subtitle">远程开机与控制排障实录</div>
+    <div class="date">2026-03</div>
+  </header>
+
+  <nav class="toc">
+    <h2>目录</h2>
+    <a href="#env"><span class="dot" style="background:var(--purple)"></span>硬件环境</a>
+    <a href="#wifi"><span class="dot" style="background:var(--coral)"></span>难点一：智能插座配网失败</a>
+    <a href="#bios"><span class="dot" style="background:var(--amber)"></span>难点二：BIOS 与 AC Recovery</a>
+    <a href="#flow"><span class="dot" style="background:var(--green)"></span>成功链路记录</a>
+    <a href="#tips"><span class="dot" style="background:var(--cyan)"></span>经验总结与后续建议</a>
+  </nav>
+
+  <!-- SECTION: 硬件环境 -->
+  <section id="env">
+    <h2>硬件环境 <span class="badge status-info">网络拓扑</span></h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">光纤入户</div>
+        <div class="value">1楼 + 3楼 独立光纤</div>
+        <div class="detail">复杂多层网络结构</div>
+      </div>
+      <div class="info-card">
+        <div class="label">路由层级</div>
+        <div class="value">光猫 → 荣耀路由 → 华为吸顶AP</div>
+        <div class="detail">192.168.1.1 → 192.168.2.1 → AC组网</div>
+      </div>
+      <div class="info-card">
+        <div class="label">智能插座</div>
+        <div class="value">向日葵 C1 Pro</div>
+        <div class="detail">配合向日葵客户端远程开机</div>
+      </div>
+      <div class="info-card">
+        <div class="label">被控主机</div>
+        <div class="value">Windows 台式电脑</div>
+        <div class="detail">连接在该网络下</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: 配网失败 -->
+  <section id="wifi">
+    <h2>难点一：智能插座配网失败 <span class="badge status-done">已解决</span></h2>
+    <p style="color:var(--text2); font-size:14px; margin-bottom:16px;">现象：向日葵 App 提示需要 2.4G 网络，配网进度卡在 98%，或找不到 2.4G 信号。</p>
+
+    <div class="alert alert-danger">
+      <span class="icon">🔍</span>
+      <div>
+        <strong>原因分析：</strong>三个问题叠加 — ① 荣耀 Wi-Fi 6 路由器的"双频合一"导致智能家居芯片无法识别 2.4G；② 手机未开启"本地网络"权限，局域网寻址失败；③ WPA3 混合加密与智能设备的 WPA2 不兼容。
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step open">
+        <div class="step-header" onclick="toggleStep(this)">
+          <h3>物理重置荣耀 Wi-Fi 6 路由器</h3>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="step-body">
+          <p>长按路由器背面 Reset 孔 <strong>10 秒</strong>，等待指示灯全部闪烁后松手。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <h3>关闭"双频合一"，独立 2.4G 信号</h3>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="step-body">
+          <p>登录路由器后台 <code>192.168.2.1</code>，在 Wi-Fi 设置中 <strong>关闭"双频合一"</strong>（或"5G 优选"）。</p>
+          <p>将 2.4G 网络独立命名，例如 <code>Home_2.4G</code>。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <h3>加密方式降级为 WPA2-PSK</h3>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="step-body">
+          <p>在 2.4G 网络的安全设置中，将加密方式从 WPA3/WPA2 混合改为 <strong>WPA2-PSK</strong>。</p>
+          <div class="highlight">⚡ 早期智能家居芯片普遍只支持 WPA2，这是很多智能设备配网失败的隐藏原因。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <h3>手机连接 2.4G 后重新配网</h3>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="step-body">
+          <p>手机连接独立的 <code>Home_2.4G</code> 网络，确保已开启"本地网络"权限，然后在向日葵 App 中重新添加设备。</p>
+          <div class="highlight">✅ 成功连网！</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: BIOS -->
+  <section id="bios">
+    <h2>难点二：BIOS 与 AC Recovery <span class="badge status-done">已解决</span></h2>
+    <p style="color:var(--text2); font-size:14px; margin-bottom:16px;">现象：插座通电后，电脑主机毫无反应。</p>
+
+    <div class="alert alert-warn">
+      <span class="icon">💡</span>
+      <div>
+        <strong>核心原理：</strong>远程开机的本质是利用主板的<strong>"来电唤醒"</strong>功能（AC Recovery），而非传统的网络唤醒（WOL）。插座断电再通电 = 模拟"市电恢复"，主板检测到后自动开机。
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step open">
+        <div class="step-header" onclick="toggleStep(this)">
+          <h3>配置 BIOS：AC Recovery → Power On</h3>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="step-body">
+          <p>进入主板 BIOS 设置，找到 <strong>Power Management</strong>（电源管理）选项。</p>
+          <p>将 <code>AC Recovery</code>（或 <code>Restore on AC Power Loss</code>）设置为 <strong>Power On</strong>。</p>
+          <p>保存并退出 BIOS。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <h3>关键操作规范：断电放电等待</h3>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="step-body">
+          <div class="highlight">
+            ⚠️ <strong>关键：关机后不可立即断电再通电！</strong><br>
+            必须等待 <strong>1-2 分钟</strong>，观察主板灯/网口灯彻底熄灭，确保主板电容彻底放电。此时再开启插座通电，才能成功触发自动开机。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: 成功链路 -->
+  <section id="flow">
+    <h2>成功链路记录 <span class="badge status-done">当前状态 · OK</span></h2>
+
+    <table class="flow-table">
+      <thead>
+        <tr>
+          <th>步骤</th>
+          <th>操作端</th>
+          <th>具体动作</th>
+          <th>结果</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="step-num">1</span></td>
+          <td>手机 App</td>
+          <td>关闭智能插座电源，等待 1-2 分钟</td>
+          <td>主板彻底放电，"真断电"状态</td>
+        </tr>
+        <tr>
+          <td><span class="step-num">2</span></td>
+          <td>手机 App</td>
+          <td><strong>开启插座电源</strong>（不用"主机开机"按钮）</td>
+          <td>"滴"声启动，自动开机</td>
+        </tr>
+        <tr>
+          <td><span class="step-num">3</span></td>
+          <td>被控电脑</td>
+          <td>电脑启动，停留在 Windows 登录界面</td>
+          <td>向日葵服务已后台运行并联网</td>
+        </tr>
+        <tr>
+          <td><span class="step-num">4</span></td>
+          <td>另一台 PC</td>
+          <td>在向日葵客户端查看设备列表</td>
+          <td>显示主机 <strong style="color:var(--green)">在线 (OK)</strong></td>
+        </tr>
+        <tr>
+          <td><span class="step-num">5</span></td>
+          <td>另一台 PC</td>
+          <td>发起远程控制，输入 Windows 密码</td>
+          <td>成功登入桌面，全流程闭环 ✅</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="alert alert-warn">
+      <span class="icon">⚠️</span>
+      <div>
+        <strong>残留现象：</strong>PC 端可以正常看到设备在线并控制，但<strong>手机端 App 仍显示无法控制或离线</strong>。<br>
+        初步判定：被控端及网络硬件 100% 正常。手机端问题大概率为 App 缓存未刷新、跨设备账号同步延迟、或未给予 App 后台刷新权限。
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: 经验总结 -->
+  <section id="tips">
+    <h2>经验总结与后续建议 <span class="badge status-info">排障思维</span></h2>
+
+    <ul class="tips">
+      <li>
+        <span class="num">1</span>
+        <div><strong>排障思维：</strong>遇到复杂智能家居网络问题，不要盲目折腾客户端软件。先从物理层（光猫/路由网段解析）、数据链路层（频段分离/加密降级）、最后到应用层（系统服务自启）逐一排查。</div>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <div><strong>账号一致性：</strong>务必确保手机 App、主控端 PC、被控端 PC 登录的是<strong>同一个向日葵账号</strong>。</div>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <div><strong>跳过 Windows 登录密码：</strong>如果觉得每次远程需要输入密码太麻烦，可运行 <code>Win + R</code> → <code>netplwiz</code>，取消"必须输入密码"选项，实现开机直达桌面。</div>
+      </li>
+    </ul>
+  </section>
+
+</div>
+
+<script>
+function toggleStep(header) {
+  header.parentElement.classList.toggle('open');
+}
+</script>
+</body>
+</html>
