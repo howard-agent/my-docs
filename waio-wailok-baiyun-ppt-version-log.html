@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>为我为乐·白云站运营方案 PPT 版本日志</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --card: #151d2e;
+  --border: #2a3650;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --accent: #f59e0b;
+  --accent2: #d97706;
+  --green: #34d399;
+  --green-bg: rgba(52, 211, 153, 0.08);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251, 191, 36, 0.08);
+  --coral: #fb7185;
+  --coral-bg: rgba(251, 113, 133, 0.08);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167, 139, 250, 0.08);
+  --cyan: #22d3ee;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 300;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text3);
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 32px;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--accent); }
+
+header {
+  text-align: center;
+  padding: 40px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+header .icon { font-size: 48px; margin-bottom: 12px; }
+header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent), var(--coral));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+header .subtitle { color: var(--text3); font-size: 14px; }
+header .date { color: var(--text3); font-size: 13px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+nav.toc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 40px;
+}
+nav.toc h2 { font-size: 13px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+nav.toc a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+  border-bottom: 1px solid rgba(42, 54, 80, 0.5);
+}
+nav.toc a:last-child { border-bottom: none; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+section { margin-bottom: 48px; }
+section h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+section h2 .badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+.status-done { background: var(--green-bg); color: var(--green); }
+.status-warn { background: var(--amber-bg); color: var(--amber); }
+.status-issue { background: var(--coral-bg); color: var(--coral); }
+.status-info { background: var(--purple-bg); color: var(--purple); }
+
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  transition: border-color 0.2s;
+}
+.info-card:hover { border-color: var(--accent); }
+.info-card .label { font-size: 12px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.info-card .value { font-size: 15px; font-weight: 400; }
+.info-card .detail { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+.step-list { counter-reset: step; }
+.step {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.step:hover { border-color: rgba(245, 158, 11, 0.3); }
+.step-header {
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  user-select: none;
+}
+.step-header::before {
+  counter-increment: step;
+  content: counter(step);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.step-header h3 { font-size: 15px; font-weight: 500; flex: 1; }
+.step-header .arrow { color: var(--text3); transition: transform 0.2s; font-size: 14px; }
+.step.open .step-header .arrow { transform: rotate(90deg); }
+.step-body { display: none; padding: 0 20px 20px 62px; }
+.step.open .step-body { display: block; }
+.step-body p { color: var(--text2); font-size: 14px; margin-bottom: 10px; line-height: 1.7; }
+.step-body .highlight {
+  background: var(--amber-bg);
+  border-left: 3px solid var(--amber);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.flow-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.flow-table thead th {
+  background: var(--bg3);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+}
+.flow-table thead th:first-child { border-radius: 8px 0 0 0; }
+.flow-table thead th:last-child { border-radius: 0 8px 0 0; }
+.flow-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+}
+.flow-table tbody tr:last-child td { border-bottom: none; }
+.flow-table tbody tr:hover td { background: rgba(245, 158, 11, 0.03); }
+.flow-table .step-num {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.alert {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 16px 0;
+  align-items: flex-start;
+}
+.alert .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alert-success { background: var(--green-bg); border: 1px solid rgba(52, 211, 153, 0.2); }
+.alert-warn { background: var(--amber-bg); border: 1px solid rgba(251, 191, 36, 0.2); }
+.alert-danger { background: var(--coral-bg); border: 1px solid rgba(251, 113, 133, 0.2); }
+
+.kv { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+.kv .k { color: var(--text3); min-width: 100px; flex-shrink: 0; }
+.kv .v { color: var(--text2); }
+
+.tips { list-style: none; padding: 0; }
+.tips li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tips li:last-child { border-bottom: none; }
+.tips li .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--bg3);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--cyan);
+}
+
+pre {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+footer {
+  text-align: center;
+  padding: 32px 0 0;
+  border-top: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 13px;
+  margin-top: 64px;
+}
+
+@media (max-width: 600px) {
+  .container { padding: 20px 16px 60px; }
+  header h1 { font-size: 20px; }
+  .info-grid { grid-template-columns: 1fr; }
+  .flow-table { font-size: 12px; }
+  .flow-table thead th, .flow-table tbody td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="index.html">← 返回目录</a>
+
+  <header>
+    <div class="icon">🏢</div>
+    <h1>为我为乐·白云站运营方案 PPT 版本日志</h1>
+    <div class="subtitle">Waio Wailok · 物业运营方案迭代记录</div>
+    <div class="date">最后更新：2026-03-26</div>
+  </header>
+
+  <nav class="toc">
+    <h2>目录</h2>
+    <a href="#overview"><span class="dot" style="background:var(--cyan)"></span>项目概况</a>
+    <a href="#v1"><span class="dot" style="background:var(--text3)"></span>V1 — 初始版本</a>
+    <a href="#v2"><span class="dot" style="background:var(--purple)"></span>V2 — 品牌重塑 + 配色更换</a>
+    <a href="#v3"><span class="dot" style="background:var(--green)"></span>V3 — 远程运营内容强化</a>
+    <a href="#v4"><span class="dot" style="background:var(--amber)"></span>V4 — 财务模型修正 + 团队架构调整</a>
+    <a href="#v5"><span class="dot" style="background:var(--cyan)"></span>V5 — 房间规划细化 + 英文名确定</a>
+    <a href="#v6"><span class="dot" style="background:var(--green)"></span>V6 — 平面图嵌入 + 运营策略对比</a>
+    <a href="#v7"><span class="dot" style="background:var(--purple)"></span>V7 — 配色升级 + 空间结构重新定义</a>
+    <a href="#v8"><span class="dot" style="background:var(--accent)"></span>V8 — 返租模型财务测算 + 平面图电梯标注</a>
+    <a href="#v9"><span class="dot" style="background:var(--coral)"></span>待办 / V9 方向</a>
+  </nav>
+
+  <!-- 项目概况 -->
+  <section id="overview">
+    <h2>📋 项目概况 <span class="badge status-info">META</span></h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">项目名称</div>
+        <div class="value">为我为乐 (Waio Wailok)</div>
+        <div class="detail">白云站物业运营方案</div>
+      </div>
+      <div class="info-card">
+        <div class="label">委托方</div>
+        <div class="value">香港诚谦有限公司</div>
+        <div class="detail">Genuine Reserve Ltd.</div>
+      </div>
+      <div class="info-card">
+        <div class="label">物业地址</div>
+        <div class="value">[地址]</div>
+        <div class="detail">白云站旁 · 5F</div>
+      </div>
+      <div class="info-card">
+        <div class="label">版本区间</div>
+        <div class="value">V1 — V8</div>
+        <div class="detail">2026-03-18 → 2026-03-26</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 版本列表 -->
+  <section id="versions">
+    <h2>🗂 版本迭代历史 <span class="badge status-done">V1–V8</span></h2>
+    <div class="step-list">
+
+      <!-- V1 -->
+      <div class="step open" id="v1">
+        <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+          <h3>V1 — 初始版本</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">2026-03-18 · 11页</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="step-body">
+          <div class="kv"><span class="k">文件名</span><span class="v"><code>我爱我乐_白云站运营方案.pptx</code></span></div>
+          <p style="margin-top:12px;">初版内容涵盖项目核心框架，建立基础商业逻辑。</p>
+          <ul class="tips">
+            <li><span class="num">1</span>封面 + 项目概况 + 核心商业逻辑（双钥匙模式）</li>
+            <li><span class="num">2</span>目标客群分析（4类客群）</li>
+            <li><span class="num">3</span>空间功能规划（A/B/C/D 四区）</li>
+            <li><span class="num">4</span>装修主题与样板间策略（9间特色主题）</li>
+            <li><span class="num">5</span>多元运营模式（5大收入来源）</li>
+            <li><span class="num">6</span>营销与品牌策略</li>
+            <li><span class="num">7</span>财务测算：投入约 200万，月收 30万，约 12月回本</li>
+            <li><span class="num">8</span>执行计划（4阶段时间表）</li>
+          </ul>
+          <div class="highlight">设计风格：深蓝黑金色高端商务风格，底色 <code>#1A1A2E</code>，金色 <code>#C9A227</code></div>
+        </div>
+      </div>
+
+      <!-- V2 -->
+      <div class="step" id="v2">
+        <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+          <h3>V2 — 品牌重塑 + 配色更换</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">2026-03-18</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="step-body">
+          <div class="kv"><span class="k">文件名</span><span class="v"><code>为我为乐_白云站运营方案_v2.pptx</code></span></div>
+          <ul class="tips" style="margin-top:12px;">
+            <li><span class="num">+</span>品牌名从「我爱我乐」改为「为我为乐」</li>
+            <li><span class="num">+</span>封面加入委托方：香港诚谦有限公司</li>
+            <li><span class="num">~</span>配色参考 <code>为我为乐(3).pptx</code>，改为暖棕米白色系（主色 <code>#97857B</code>，底色米白）</li>
+            <li><span class="num">-</span>移除深蓝黑金配色方案</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- V3 -->
+      <div class="step" id="v3">
+        <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+          <h3>V3 — 远程运营内容强化</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">2026-03-18 · 首次 PPTX+PDF</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="step-body">
+          <div class="kv"><span class="k">文件名</span><span class="v"><code>为我为乐_白云站运营方案_v3_20260318.pptx / .pdf</code></span></div>
+          <div class="alert alert-success" style="margin-top:12px;">
+            <span class="icon">📄</span>
+            <span>首次同时输出 PPTX + PDF 双版本，便于分发与存档。</span>
+          </div>
+          <ul class="tips">
+            <li><span class="num">+</span>参考案例：远程运营公寓成功案例</li>
+            <li><span class="num">+</span>具体工具推荐（远程管理工具）</li>
+            <li><span class="num">+</span>SLA 承诺 KPI</li>
+            <li><span class="num">+</span>日报模板展示</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- V4 -->
+      <div class="step" id="v4">
+        <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+          <h3>V4 — 财务模型修正 + 团队架构调整</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">2026-03-19</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="step-body">
+          <div class="kv"><span class="k">文件名</span><span class="v"><code>为我为乐_白云站运营方案_v4_20260319.pptx / .pdf</code></span></div>
+          <div class="alert alert-warn" style="margin-top:12px;">
+            <span class="icon">⚠️</span>
+            <span>定价重新校准：云谷市价 1200–2500元/月，原 6000元/月严重偏高，本版修正。</span>
+          </div>
+          <ul class="tips">
+            <li><span class="num">~</span>团队配置改为 3人：运营主管1名 + 保洁2名（外包）</li>
+            <li><span class="num">+</span>加入 SOP 标准化流程</li>
+            <li><span class="num">+</span>费用结构分离：前期策划费 vs 月度运营管理费独立列示</li>
+            <li><span class="num">~</span>财务模型改为保守版本</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- V5 -->
+      <div class="step" id="v5">
+        <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+          <h3>V5 — 房间规划细化 + 英文名确定</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">2026-03-19 · 15页</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="step-body">
+          <div class="kv"><span class="k">文件名</span><span class="v"><code>为我为乐_白云站运营方案_v5_20260319.pptx / .pdf</code></span></div>
+          <ul class="tips" style="margin-top:12px;">
+            <li><span class="num">+</span>周边业态分析</li>
+            <li><span class="num">+</span>1–28号房间逐间设计规划</li>
+            <li><span class="num">+</span>自动化入住 + 预约机制</li>
+            <li><span class="num">+</span>6个月 KPI 考核机制</li>
+            <li><span class="num">+</span>隔音解决方案</li>
+            <li><span class="num">~</span>英文公司名确定为 Genuine Reserve Ltd.</li>
+            <li><span class="num">~</span>前期策划费定为 <strong>10万元</strong></li>
+          </ul>
+          <div class="highlight">5F 楼层分区明确：1–5+25–28 展示/直播，6–8 工区，9–24 酒店双钥匙</div>
+        </div>
+      </div>
+
+      <!-- V6 -->
+      <div class="step" id="v6">
+        <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+          <h3>V6 — 平面图嵌入 + 运营策略对比</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">2026-03-19 · 16页</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="step-body">
+          <div class="kv"><span class="k">文件名</span><span class="v"><code>为我为乐_白云站运营方案_v6_20260319.pptx / .pdf</code></span></div>
+          <ul class="tips" style="margin-top:12px;">
+            <li><span class="num">+</span>嵌入实景平面图（干净版 + 黄色高亮分区版）</li>
+            <li><span class="num">+</span>三种运营策略横向对比分析</li>
+            <li><span class="num">+</span>绩效阶梯收费方案</li>
+            <li><span class="num">~</span>房间总数统一为 <strong>32间</strong></li>
+            <li><span class="num">~</span>Zone C 描述去除 5F+6F 的楼层表述</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- V7 -->
+      <div class="step" id="v7">
+        <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+          <h3>V7 — 配色升级 + 空间结构重新定义</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">2026-03-19 · 16页</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="step-body">
+          <div class="kv"><span class="k">文件名</span><span class="v"><code>为我为乐_白云站运营方案_v7_20260319.pptx / .pdf</code></span></div>
+          <div class="alert alert-success" style="margin-top:12px;">
+            <span class="icon">🎨</span>
+            <span>引入 Pantone 2026 年度色 Cloud Dancer（<code>#F5F2EE</code> 暖白底），全局风格升级。</span>
+          </div>
+          <ul class="tips">
+            <li><span class="num">+</span>楼层平面图弧形示意图（分区涂色可视化）</li>
+            <li><span class="num">+</span>Zone A / B / C 各自独立页面展示</li>
+            <li><span class="num">+</span>全局页码（封面除外）</li>
+          </ul>
+          <p style="margin-top:8px;color:var(--text3);font-size:13px;">空间结构重新定义：</p>
+          <table class="flow-table" style="margin-top:8px;">
+            <thead>
+              <tr>
+                <th>区域</th>
+                <th>数量</th>
+                <th>功能定位</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="step-num">Zone A</span></td><td>×9间</td><td>特色展示 / 直播</td></tr>
+              <tr><td><span class="step-num">Zone B</span></td><td>×3间</td><td>公共功能区</td></tr>
+              <tr><td><span class="step-num">Zone C</span></td><td>×16间双钥匙</td><td>上下两层 = 32个独立入住单元</td></tr>
+            </tbody>
+          </table>
+          <div class="highlight">绩效收费调整为：固定底薪 2万 + 比例提成</div>
+        </div>
+      </div>
+
+      <!-- V8 -->
+      <div class="step" id="v8">
+        <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+          <h3>V8 — 返租模型财务测算 + 平面图电梯标注</h3>
+          <span style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">2026-03-26 · 17页</span>
+          <span class="arrow">▶</span>
+        </div>
+        <div class="step-body">
+          <div class="kv"><span class="k">文件名</span><span class="v"><code>为我为乐_白云站运营方案_v8_20260326.pptx</code></span></div>
+          <div class="kv"><span class="k">生成路径</span><span class="v"><code>/home/[用户名]/wsl-workspace/白云站我爱我乐/</code></span></div>
+
+          <p style="margin-top:16px;font-weight:500;color:var(--text);">新增 P07：返租模型财务测算</p>
+          <div class="highlight">
+            返租逻辑：业主投入 300–500万装修 → 开发商返租 24间普通房 → 业主按月收租金<br>
+            业主自留 4间大角房（01/17/18/28）作为 Zone A 自营（宣传/直播/接待）<br>
+            返租 24间 × 双钥匙 = 48个出租单元
+          </div>
+
+          <p style="margin-top:16px;color:var(--text3);font-size:13px;font-weight:500;">三场景年收入测算</p>
+          <table class="flow-table">
+            <thead>
+              <tr>
+                <th>场景</th>
+                <th>依据</th>
+                <th>年收入</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="step-num">保守</span>（老板估算）</td>
+                <td>24间 × 6,000avg × 11月</td>
+                <td>≈ 158万</td>
+              </tr>
+              <tr>
+                <td><span class="step-num">基准</span></td>
+                <td>24间 × 7,000avg × 11月</td>
+                <td>≈ 185万</td>
+              </tr>
+              <tr>
+                <td><span class="step-num">乐观</span>（双钥匙）</td>
+                <td>48单元 × 6,000avg × 11月</td>
+                <td>≈ 317万</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p style="margin-top:16px;color:var(--text3);font-size:13px;font-weight:500;">2年回本对比</p>
+          <table class="flow-table">
+            <thead>
+              <tr>
+                <th>场景</th>
+                <th>2年收入</th>
+                <th>vs 300万投入</th>
+                <th>vs 500万投入</th>
+                <th>回本周期</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="step-num">保守</span></td>
+                <td>316万</td>
+                <td style="color:var(--green);">✓ 勉强</td>
+                <td style="color:var(--coral);">✗ 差184万</td>
+                <td>≈1.9年 / >3年</td>
+              </tr>
+              <tr>
+                <td><span class="step-num">基准</span></td>
+                <td>370万</td>
+                <td style="color:var(--green);">✓ 盈余70万</td>
+                <td style="color:var(--coral);">✗ 差130万</td>
+                <td>≈1.6年 / 2.7年</td>
+              </tr>
+              <tr>
+                <td><span class="step-num">乐观</span></td>
+                <td>634万</td>
+                <td style="color:var(--green);">✓✓ 盈余334万</td>
+                <td style="color:var(--green);">✓ 盈余134万</td>
+                <td>≈0.9年 / 1.6年</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p style="margin-top:16px;font-weight:500;color:var(--text);">其他修改</p>
+          <ul class="tips">
+            <li><span class="num">+</span>P06 平面图：两端加入电梯核心标注（之前示意图缺失电梯位置）</li>
+            <li><span class="num">~</span>P03 项目概况：新增「两种路径并行测算」说明</li>
+            <li><span class="num">~</span>P14 财务测算标题改为「自运营模型」，与返租模型明确区分</li>
+            <li><span class="num">~</span>所有原 P07 以后的页码 +1（共 17页）</li>
+          </ul>
+
+          <div class="alert alert-warn" style="margin-top:16px;">
+            <span class="icon">⏸️</span>
+            <div>
+              <strong>暂缓内容：</strong>中信证券合作公户内容（1000万–5000万合作公户、FOF 10%、企业培训）暂不放入PPT，待单独整理。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- V9 待办 -->
+  <section id="v9">
+    <h2>🔭 待办 / V9 方向 <span class="badge status-warn">PENDING</span></h2>
+    <ul class="tips">
+      <li>
+        <span class="num">1</span>
+        <span>Zone B 后勤区用途待与老板进一步确认（商务接待 / 会议室 / 休闲区）</span>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <span>自运营财务模型装修投入明细（分阶段，对应 300万 vs 500万场景）</span>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <span>中信证券合作公户内容考虑独立成一页「资源整合」或「融资路径」附件</span>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    Howard · Powered by Claude
+  </footer>
+
+</div>
+
+<script>
+// Auto-open first step only; others collapsed by default
+document.querySelectorAll('.step').forEach((step, i) => {
+  if (i !== 0) step.classList.remove('open');
+});
+</script>
+</body>
+</html>
