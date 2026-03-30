@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JHFinance 财务自动化系统 SOP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --bg2: #111827;
+      --bg3: #1a2235;
+      --card: #151d2e;
+      --border: #2a3650;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --accent: #f59e0b;
+      --accent2: #d97706;
+      --green: #34d399;
+      --green-bg: rgba(52, 211, 153, 0.08);
+      --amber: #fbbf24;
+      --amber-bg: rgba(251, 191, 36, 0.08);
+      --coral: #fb7185;
+      --coral-bg: rgba(251, 113, 133, 0.08);
+      --purple: #a78bfa;
+      --purple-bg: rgba(167, 139, 250, 0.08);
+      --cyan: #22d3ee;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 300;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text3);
+      text-decoration: none;
+      font-size: 13px;
+      margin-bottom: 32px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    header {
+      text-align: center;
+      padding: 40px 0 32px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+    header .icon { font-size: 48px; margin-bottom: 12px; }
+    header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--coral));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    header .subtitle { color: var(--text3); font-size: 14px; }
+    header .date { color: var(--text3); font-size: 13px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    nav.toc h2 { font-size: 13px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    nav.toc a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+      border-bottom: 1px solid rgba(42, 54, 80, 0.5);
+    }
+    nav.toc a:last-child { border-bottom: none; }
+    nav.toc a:hover { color: var(--accent); }
+    nav.toc .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    section { margin-bottom: 48px; }
+    section h2 {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .status-done { background: var(--green-bg); color: var(--green); }
+    .status-warn { background: var(--amber-bg); color: var(--amber); }
+    .status-issue { background: var(--coral-bg); color: var(--coral); }
+    .status-info { background: var(--purple-bg); color: var(--purple); }
+
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      transition: border-color 0.2s;
+    }
+    .info-card:hover { border-color: var(--accent); }
+    .info-card .label { font-size: 12px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-card .value { font-size: 15px; font-weight: 400; }
+    .info-card .detail { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    .step-list { counter-reset: step; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .step:hover { border-color: rgba(245, 158, 11, 0.3); }
+    .step-header {
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      user-select: none;
+    }
+    .step-header::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .step-header h3 { font-size: 15px; font-weight: 500; flex: 1; }
+    .step-header .arrow { color: var(--text3); transition: transform 0.2s; font-size: 14px; }
+    .step.open .step-header .arrow { transform: rotate(90deg); }
+    .step-body { display: none; padding: 0 20px 20px 62px; }
+    .step.open .step-body { display: block; }
+    .step-body p { color: var(--text2); font-size: 14px; margin-bottom: 10px; line-height: 1.7; }
+    .step-body .highlight {
+      background: var(--amber-bg);
+      border-left: 3px solid var(--amber);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 10px 0;
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .flow-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .flow-table thead th {
+      background: var(--bg3);
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border);
+    }
+    .flow-table thead th:first-child { border-radius: 8px 0 0 0; }
+    .flow-table thead th:last-child { border-radius: 0 8px 0 0; }
+    .flow-table tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      vertical-align: top;
+    }
+    .flow-table tbody tr:last-child td { border-bottom: none; }
+    .flow-table tbody tr:hover td { background: rgba(245, 158, 11, 0.03); }
+    .flow-table .step-num {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .alert {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 16px 0;
+      align-items: flex-start;
+    }
+    .alert .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .alert-success { background: var(--green-bg); border: 1px solid rgba(52, 211, 153, 0.2); }
+    .alert-warn { background: var(--amber-bg); border: 1px solid rgba(251, 191, 36, 0.2); }
+    .alert-danger { background: var(--coral-bg); border: 1px solid rgba(251, 113, 133, 0.2); }
+
+    .kv { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+    .kv .k { color: var(--text3); min-width: 100px; flex-shrink: 0; }
+    .kv .v { color: var(--text2); }
+
+    .tips { list-style: none; padding: 0; }
+    .tips li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .tips li:last-child { border-bottom: none; }
+    .tips li .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--bg3);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--bg3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--cyan);
+    }
+
+    pre {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+
+    section h3 {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text2);
+      margin: 20px 0 10px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text3);
+      font-size: 13px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 20px 16px 60px; }
+      header h1 { font-size: 20px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .flow-table { font-size: 12px; }
+      .flow-table thead th, .flow-table tbody td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <a class="back-link" href="index.html">← 返回目录</a>
+
+    <header>
+      <div class="icon">📊</div>
+      <h1>JHFinance 财务自动化系统 SOP</h1>
+      <div class="subtitle">跨境电商内部财务看板 · WSL2 + GitHub Pages</div>
+      <div class="date">2026-03-30</div>
+    </header>
+
+    <nav class="toc">
+      <h2>目录</h2>
+      <a href="#s1"><span class="dot" style="background:var(--purple)"></span>一、系统架构总览</a>
+      <a href="#s2"><span class="dot" style="background:var(--cyan)"></span>二、数据来源说明</a>
+      <a href="#s3"><span class="dot" style="background:var(--cyan)"></span>三、缓存数据结构</a>
+      <a href="#s4"><span class="dot" style="background:var(--amber)"></span>四、汇率配置</a>
+      <a href="#s5"><span class="dot" style="background:var(--amber)"></span>五、月度固定成本维护</a>
+      <a href="#s6"><span class="dot" style="background:var(--green)"></span>六、每日自动更新流程</a>
+      <a href="#s7"><span class="dot" style="background:var(--green)"></span>七、HTML 看板访问</a>
+      <a href="#s8"><span class="dot" style="background:var(--cyan)"></span>八、新增财务数据操作步骤</a>
+      <a href="#s9"><span class="dot" style="background:var(--amber)"></span>九、领星 API 配置说明</a>
+      <a href="#s10"><span class="dot" style="background:var(--coral)"></span>十、常见问题排查</a>
+      <a href="#s11"><span class="dot" style="background:var(--purple)"></span>十一、依赖安装</a>
+    </nav>
+
+    <!-- Section 1 -->
+    <section id="s1">
+      <h2>一、系统架构总览 <span class="badge status-info">ARCH</span></h2>
+      <div class="alert alert-warn">
+        <span class="icon">ℹ️</span>
+        <span>适用项目：某跨境电商公司内部财务看板。环境：WSL2 (Ubuntu) + VS Code Remote + GitHub Pages。</span>
+      </div>
+      <pre><code>raw-data/          ← 原始 Excel 财务文件（手动上传）
+analysis/
+  ├── generate_reports.py      ← 读取 Excel，生成财务三表
+  ├── generate_html_report.py  ← 生成 HTML 看板 + 发布到 GitHub Pages
+  ├── lingxing_api.py          ← 领星 ERP API 客户端（拉订单/库存）
+  ├── costs_config.json        ← 月度固定成本配置（人工/租金/订阅/仓储）
+  ├── daily_update.sh          ← 每日自动更新脚本（crontab 调用）
+  ├── .lx_data_cache.json      ← 领星数据本地缓存（自动生成，勿手动改）
+  └── .lx_token_cache.json     ← 领星 API Token 缓存（自动生成）
+monthly-reports/               ← 生成的 HTML 报告本地存档
+JHFinance-public/              ← GitHub Pages 仓库（git submodule 风格）</code></pre>
+    </section>
+
+    <!-- Section 2 -->
+    <section id="s2">
+      <h2>二、数据来源说明 <span class="badge status-info">DATA</span></h2>
+
+      <h3>2.1 手工 Excel 数据（历史财务）</h3>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:12px;">放在 <code>raw-data/</code> 下，文件格式经历了几次变迁：</p>
+      <table class="flow-table">
+        <thead>
+          <tr>
+            <th>时期</th>
+            <th>文件</th>
+            <th>内容</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025年1-3月</td>
+            <td><code>A1_xxx.xlsx</code></td>
+            <td>RMB 收支，多 sheet</td>
+          </tr>
+          <tr>
+            <td>2025年4-12月</td>
+            <td><code>A2_xxx.xlsx</code> / <code>锦和2025年4-5月xxx.xlsx</code></td>
+            <td>RMB 收支</td>
+          </tr>
+          <tr>
+            <td>2025年（美元月份）</td>
+            <td><code>A3资产表格.xlsx</code></td>
+            <td>USD 报表，需汇率换算</td>
+          </tr>
+          <tr>
+            <td>2026年1-2月</td>
+            <td><code>深圳市锦和科技有限公司202x年x月资产表格.xlsx</code></td>
+            <td>独立 RMB 三表（含利润/资产负债/现金流 sheet）</td>
+          </tr>
+          <tr>
+            <td>2026年3月起</td>
+            <td><code>锦和记账明细表20260330.xlsx</code></td>
+            <td>流水明细，实时更新</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="alert alert-warn">
+        <span class="icon">⚠️</span>
+        <span><strong>更新方式</strong>：直接替换 <code>raw-data/</code> 下对应文件，文件名有变化时需更新 <code>generate_reports.py</code> 里的 <code>STANDALONE_2026</code> 字典。</span>
+      </div>
+
+      <h3>2.2 领星 ERP API 数据（自动拉取）</h3>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:12px;">每天北京时间 08:00 自动拉取，覆盖<strong>当月 + 上月</strong>数据。</p>
+      <ul class="tips">
+        <li><span class="num">1</span>亚马逊订单：<code>/erp/sc/data/mws/orders</code></li>
+        <li><span class="num">2</span>多平台订单（Walmart / TikTok / Shopify / Shopee / AliExpress 等）：<code>/pb/mp/order/v2/list</code></li>
+        <li><span class="num">3</span>本地库存产品目录：<code>/erp/sc/data/local_inventory/productList</code></li>
+        <li><span class="num">4</span>店铺列表：<code>/erp/sc/data/seller/lists</code></li>
+      </ul>
+    </section>
+
+    <!-- Section 3 -->
+    <section id="s3">
+      <h2>三、缓存数据结构 <span class="badge status-info">CACHE</span></h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:12px;">文件路径：<code>analysis/.lx_data_cache.json</code></p>
+      <pre><code>{
+  "pulled_at": "2026-03-30T08:00:00",
+  "monthly_sales": {
+    "2026-03": {
+      "revenue": 57496.60,          // 原始混合币种（仅参考）
+      "refunds": 145.81,
+      "order_count": 672,           // 总订单数
+      "amazon_orders": 145,         // 其中亚马逊
+      "mp_orders": 527,             // 其中多平台
+      "revenue_by_currency": {      // ← 核对用！分币种原始金额
+        "USD": 14901.33,
+        "MXN": 36438.16
+      }
+    }
+  },
+  "inventory": {
+    "snapshot_date": "2026-03-30",
+    "total_skus": 20,
+    "items": [{"sku": "...", "name": "...", "cost": 65.00}]
+  },
+  "sellers": [...],                 // 29个店铺完整列表
+  "raw_orders": [...],              // 亚马逊原始订单数组
+  "raw_mp_orders": [...]            // 多平台原始订单数组
+}</code></pre>
+
+      <h3>如何核对数据</h3>
+      <pre><code># 查看本月汇总（快速核对）
+python3 analysis/lingxing_api.py pull
+
+# 手动查询某个币种明细
+python3 -c "
+import json
+with open('analysis/.lx_data_cache.json') as f:
+    cache = json.load(f)
+ms = cache['monthly_sales']['2026-03']
+print('订单数:', ms['order_count'], '（亚马逊', ms['amazon_orders'], '+ 多平台', ms['mp_orders'], '）')
+for cur, amt in ms['revenue_by_currency'].items():
+    print(f'  {cur}: {amt:,.2f}')
+"</code></pre>
+    </section>
+
+    <!-- Section 4 -->
+    <section id="s4">
+      <h2>四、汇率配置 <span class="badge status-warn">MANUAL</span></h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:12px;">文件：<code>analysis/costs_config.json</code></p>
+      <pre><code>{
+  "usd_rate": 7.25,
+  "aed_rate": 1.97,
+  "gbp_rate": 9.10,
+  "mxn_rate": 0.40
+}</code></pre>
+      <div class="alert alert-warn">
+        <span class="icon">⚠️</span>
+        <span>HTML 看板中所有收入均按此汇率换算为人民币后计算利润。<strong>汇率需人工定期更新。</strong></span>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="label">USD → CNY</div>
+          <div class="value">7.25</div>
+          <div class="detail">美元汇率</div>
+        </div>
+        <div class="info-card">
+          <div class="label">AED → CNY</div>
+          <div class="value">1.97</div>
+          <div class="detail">迪拉姆汇率</div>
+        </div>
+        <div class="info-card">
+          <div class="label">GBP → CNY</div>
+          <div class="value">9.10</div>
+          <div class="detail">英镑汇率</div>
+        </div>
+        <div class="info-card">
+          <div class="label">MXN → CNY</div>
+          <div class="value">0.40</div>
+          <div class="detail">墨西哥比索汇率</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5 -->
+    <section id="s5">
+      <h2>五、月度固定成本维护 <span class="badge status-warn">CONFIG</span></h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:12px;">文件：<code>analysis/costs_config.json</code> → <code>monthly_costs</code> 字段</p>
+      <ul class="tips">
+        <li><span class="num">▸</span>key 格式为 <code>YYYY-MM</code></li>
+        <li><span class="num">▸</span>缺失月份自动向前取最近一期配置</li>
+        <li><span class="num">▸</span>新增月份时直接追加 key，无需改代码</li>
+      </ul>
+      <h3>更新示例（新增5月配置）</h3>
+      <pre><code>"2026-05": {
+  "labor": {
+    "公账_XXX": 7455.69,
+    ...
+  },
+  "rent": 15000,
+  "subscriptions": 500,
+  "storage": 0,
+  "other": 0
+}</code></pre>
+      <h3>已知成本变化节点</h3>
+      <table class="flow-table">
+        <thead>
+          <tr>
+            <th>月份</th>
+            <th>变化说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="step-num">2026-02</span></td>
+            <td>基准人工成本（13人）</td>
+          </tr>
+          <tr>
+            <td><span class="step-num">2026-03</span></td>
+            <td>增加租金 ¥15,000/月</td>
+          </tr>
+          <tr>
+            <td><span class="step-num">2026-04</span></td>
+            <td>减少3人（[姓名]¥5k、[姓名]¥5k、[姓名]¥5,919）</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 6 -->
+    <section id="s6">
+      <h2>六、每日自动更新流程 <span class="badge status-done">AUTO</span></h2>
+
+      <h3>自动运行（已配置 crontab）</h3>
+      <div class="alert alert-success">
+        <span class="icon">✅</span>
+        <span>crontab 规则：<code>0 0 * * *</code> → 北京时间 08:00 自动执行</span>
+      </div>
+      <pre><code>daily_update.sh
+  └─ 1. lingxing_api.py pull     （拉领星数据 → .lx_data_cache.json）
+  └─ 2. generate_reports.py      （读 Excel + 缓存 → 财务三表）
+  └─ 3. generate_html_report.py  （生成 HTML → 推送 GitHub Pages）</code></pre>
+      <h3>日志查看</h3>
+      <pre><code>tail -f /home/howard/wsl-workspace/JHFinance/daily_update.log</code></pre>
+
+      <h3>手动触发（任意时刻刷新）</h3>
+      <pre><code>cd /home/howard/wsl-workspace/JHFinance
+bash analysis/daily_update.sh</code></pre>
+      <p style="color:var(--text2);font-size:14px;margin:8px 0;">或分步单独运行：</p>
+      <pre><code>python3 analysis/lingxing_api.py pull         # 只拉数据
+python3 analysis/generate_html_report.py      # 只刷新看板</code></pre>
+    </section>
+
+    <!-- Section 7 -->
+    <section id="s7">
+      <h2>七、HTML 看板访问 <span class="badge status-done">ONLINE</span></h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="label">公网访问</div>
+          <div class="value">GitHub Pages</div>
+          <div class="detail">https://[域名]/</div>
+        </div>
+        <div class="info-card">
+          <div class="label">局域网 / Tailscale</div>
+          <div class="value">[内网IP]:8899</div>
+          <div class="detail">http://[内网IP]:8899</div>
+        </div>
+      </div>
+      <div class="alert alert-warn">
+        <span class="icon">🔐</span>
+        <span>看板内置密码保护，分享链接时告知密码即可。</span>
+      </div>
+      <p style="color:var(--text2);font-size:14px;margin-top:12px;"><strong>发布原理</strong>：<code>generate_html_report.py</code> 运行后自动将 <code>index.html</code> 写入 <code>JHFinance-public/</code>，然后执行 <code>git add / commit / push</code> 推送到 GitHub Pages。</p>
+    </section>
+
+    <!-- Section 8 -->
+    <section id="s8">
+      <h2>八、新增财务数据操作步骤 <span class="badge status-info">OPS</span></h2>
+      <div class="step-list">
+
+        <div class="step open">
+          <div class="step-header" onclick="toggleStep(this)">
+            <h3>场景 A：更新当月流水（月中 / 月末）</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <p>1. 替换 <code>raw-data/锦和记账明细表YYYYMMDD.xlsx</code>（更新文件名日期）</p>
+            <p>2. 更新 <code>generate_reports.py</code> 中 <code>load_journal()</code> 函数里的文件名</p>
+            <p>3. 运行：</p>
+            <pre><code>bash analysis/daily_update.sh</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-header" onclick="toggleStep(this)">
+            <h3>场景 B：新月份有独立三表文件（如 2026-04 月）</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <p>1. 将新文件放入 <code>raw-data/</code></p>
+            <p>2. 在 <code>generate_reports.py</code> 的 <code>STANDALONE_2026</code> 字典中追加：</p>
+            <pre><code>'2026-04': {
+    'file': '深圳市锦和科技有限公司2026年4月资产表格.xlsx',
+    'profit': '4月利润表',
+    'balance': '4月资产负债表',
+    'cashflow': '2026年4月现金流量表'
+}</code></pre>
+            <p>3. 确认 sheet 名称与实际文件一致</p>
+            <p>4. 运行：</p>
+            <pre><code>bash analysis/daily_update.sh</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-header" onclick="toggleStep(this)">
+            <h3>场景 C：成本变化（加减员工 / 调整租金等）</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <p>1. 编辑 <code>analysis/costs_config.json</code>，新增对应月份的配置</p>
+            <p>2. 重新运行看板生成：</p>
+            <pre><code>python3 analysis/generate_html_report.py</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 9 -->
+    <section id="s9">
+      <h2>九、领星 API 配置说明 <span class="badge status-warn">API</span></h2>
+      <div class="alert alert-danger">
+        <span class="icon">🔒</span>
+        <span>以下为脱敏说明，实际密钥见代码中 <code>lingxing_api.py</code>。</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="label">API 域名</div>
+          <div class="value">openapi.lingxing.com</div>
+          <div class="detail">https://openapi.lingxing.com</div>
+        </div>
+        <div class="info-card">
+          <div class="label">认证方式</div>
+          <div class="value">AppKey + AppSecret</div>
+          <div class="detail">换取 Access Token，有效期 7200s，自动缓存</div>
+        </div>
+        <div class="info-card">
+          <div class="label">签名算法</div>
+          <div class="value">MD5 → AES-128-ECB</div>
+          <div class="detail">参数排序拼接 → MD5 大写 → AES-128-ECB（key=AppKey前16字节）→ Base64</div>
+        </div>
+        <div class="info-card">
+          <div class="label">IP 白名单</div>
+          <div class="value">需在后台添加</div>
+          <div class="detail">WSL 出口 IP：[公网IP] 及本机 IP</div>
+        </div>
+      </div>
+
+      <h3>平台代码对照（多平台订单过滤用）</h3>
+      <table class="flow-table">
+        <thead>
+          <tr>
+            <th>代码</th>
+            <th>平台</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="step-num">10001</span></td><td>Amazon</td></tr>
+          <tr><td><span class="step-num">10002</span></td><td>Shopify</td></tr>
+          <tr><td><span class="step-num">10003</span></td><td>eBay</td></tr>
+          <tr><td><span class="step-num">10006</span></td><td>Shopee</td></tr>
+          <tr><td><span class="step-num">10007</span></td><td>Lazada</td></tr>
+          <tr><td><span class="step-num">10008</span></td><td>Walmart</td></tr>
+          <tr><td><span class="step-num">10011</span></td><td>TikTok</td></tr>
+          <tr><td><span class="step-num">10022</span></td><td>Temu 全托管</td></tr>
+          <tr><td><span class="step-num">10024</span></td><td>Temu 半托管</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 10 -->
+    <section id="s10">
+      <h2>十、常见问题排查 <span class="badge status-issue">DEBUG</span></h2>
+      <table class="flow-table">
+        <thead>
+          <tr>
+            <th>问题</th>
+            <th>原因</th>
+            <th>解决</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>看板打不开 / GitHub 404</td>
+            <td>Jekyll 处理中文文件名失败</td>
+            <td>确认 <code>JHFinance-public/.nojekyll</code> 文件存在</td>
+          </tr>
+          <tr>
+            <td>领星返回 sign error (2001006)</td>
+            <td>签名参数有误</td>
+            <td>POST 请求需把 body 参数也纳入签名计算</td>
+          </tr>
+          <tr>
+            <td>多平台订单为 0</td>
+            <td>API 分页 total 字段为字符串</td>
+            <td>已修复：<code>int(data.get('total') or 0)</code></td>
+          </tr>
+          <tr>
+            <td>收入数字偏小（只有 USD 部分）</td>
+            <td>多平台 MXN/AED 未换算</td>
+            <td>检查 <code>costs_config.json</code> 中对应汇率是否配置</td>
+          </tr>
+          <tr>
+            <td>pip 安装失败（venv shebang 错误）</td>
+            <td>macOS venv 带了 Mac 路径的 shebang</td>
+            <td><code>pip3 install --user --break-system-packages &lt;包名&gt;</code></td>
+          </tr>
+          <tr>
+            <td>git push 失败（SSH 权限）</td>
+            <td>WSL 无 SSH key 配置</td>
+            <td>改用 HTTPS：<code>git remote set-url origin https://github.com/...</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 11 -->
+    <section id="s11">
+      <h2>十一、依赖安装（新机器初始化）<span class="badge status-info">SETUP</span></h2>
+      <pre><code>pip3 install --user --break-system-packages openpyxl pandas pycryptodome</code></pre>
+    </section>
+
+    <footer>Howard · Powered by Claude</footer>
+  </div>
+
+  <script>
+    function toggleStep(header) {
+      const step = header.parentElement;
+      step.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
