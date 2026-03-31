@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skilljar + NotebookLM 学习工作流</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --bg2: #111827;
+      --bg3: #1a2235;
+      --card: #151d2e;
+      --border: #2a3650;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --accent: #f59e0b;
+      --accent2: #d97706;
+      --green: #34d399;
+      --green-bg: rgba(52, 211, 153, 0.08);
+      --amber: #fbbf24;
+      --amber-bg: rgba(251, 191, 36, 0.08);
+      --coral: #fb7185;
+      --coral-bg: rgba(251, 113, 133, 0.08);
+      --purple: #a78bfa;
+      --purple-bg: rgba(167, 139, 250, 0.08);
+      --cyan: #22d3ee;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 300;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text3);
+      text-decoration: none;
+      font-size: 13px;
+      margin-bottom: 32px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    header {
+      text-align: center;
+      padding: 40px 0 32px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+    header .icon { font-size: 48px; margin-bottom: 12px; }
+    header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--coral));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    header .subtitle { color: var(--text3); font-size: 14px; }
+    header .date { color: var(--text3); font-size: 13px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    nav.toc h2 { font-size: 13px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    nav.toc a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+      border-bottom: 1px solid rgba(42, 54, 80, 0.5);
+    }
+    nav.toc a:last-child { border-bottom: none; }
+    nav.toc a:hover { color: var(--accent); }
+    nav.toc .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    section { margin-bottom: 48px; }
+    section h2 {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .status-done { background: var(--green-bg); color: var(--green); }
+    .status-warn { background: var(--amber-bg); color: var(--amber); }
+    .status-issue { background: var(--coral-bg); color: var(--coral); }
+    .status-info { background: var(--purple-bg); color: var(--purple); }
+
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      transition: border-color 0.2s;
+    }
+    .info-card:hover { border-color: var(--accent); }
+    .info-card .label { font-size: 12px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-card .value { font-size: 15px; font-weight: 400; }
+    .info-card .detail { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    .step-list { counter-reset: step; }
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .step:hover { border-color: rgba(245, 158, 11, 0.3); }
+    .step-header {
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      user-select: none;
+    }
+    .step-header::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .step-header h3 { font-size: 15px; font-weight: 500; flex: 1; }
+    .step-header .arrow { color: var(--text3); transition: transform 0.2s; font-size: 14px; }
+    .step.open .step-header .arrow { transform: rotate(90deg); }
+    .step-body { display: none; padding: 0 20px 20px 62px; }
+    .step.open .step-body { display: block; }
+    .step-body p { color: var(--text2); font-size: 14px; margin-bottom: 10px; line-height: 1.7; }
+    .step-body .highlight {
+      background: var(--amber-bg);
+      border-left: 3px solid var(--amber);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 10px 0;
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .flow-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .flow-table thead th {
+      background: var(--bg3);
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border);
+    }
+    .flow-table thead th:first-child { border-radius: 8px 0 0 0; }
+    .flow-table thead th:last-child { border-radius: 0 8px 0 0; }
+    .flow-table tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      vertical-align: top;
+    }
+    .flow-table tbody tr:last-child td { border-bottom: none; }
+    .flow-table tbody tr:hover td { background: rgba(245, 158, 11, 0.03); }
+    .flow-table .step-num {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .alert {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 16px 0;
+      align-items: flex-start;
+    }
+    .alert .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .alert-success { background: var(--green-bg); border: 1px solid rgba(52, 211, 153, 0.2); }
+    .alert-warn { background: var(--amber-bg); border: 1px solid rgba(251, 191, 36, 0.2); }
+    .alert-danger { background: var(--coral-bg); border: 1px solid rgba(251, 113, 133, 0.2); }
+
+    .kv { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+    .kv .k { color: var(--text3); min-width: 100px; flex-shrink: 0; }
+    .kv .v { color: var(--text2); }
+
+    .tips { list-style: none; padding: 0; }
+    .tips li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .tips li:last-child { border-bottom: none; }
+    .tips li .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--bg3);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--bg3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--cyan);
+    }
+
+    pre {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 13px;
+      color: var(--cyan);
+    }
+
+    .priority-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .p1 { background: var(--coral-bg); color: var(--coral); }
+    .p2 { background: var(--amber-bg); color: var(--amber); }
+    .p3 { background: var(--green-bg); color: var(--green); }
+    .p4 { background: var(--purple-bg); color: var(--purple); }
+    .p5 { background: rgba(34, 211, 238, 0.08); color: var(--cyan); }
+
+    .dual-track {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .track-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .track-card .track-label {
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .track-card .track-desc {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+    .track-concept .track-label { color: var(--purple); }
+    .track-concept { border-color: rgba(167, 139, 250, 0.2); }
+    .track-code .track-label { color: var(--green); }
+    .track-code { border-color: rgba(52, 211, 153, 0.2); }
+
+    footer {
+      text-align: center;
+      padding: 32px 0 0;
+      border-top: 1px solid var(--border);
+      color: var(--text3);
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 20px 16px 60px; }
+      header h1 { font-size: 20px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .flow-table { font-size: 12px; }
+      .flow-table thead th, .flow-table tbody td { padding: 8px 10px; }
+      .dual-track { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <a class="back-link" href="index.html">← 返回目录</a>
+
+    <header>
+      <div class="icon">🎓</div>
+      <h1>Skilljar + NotebookLM 学习工作流</h1>
+      <div class="subtitle">提取 · 导入 · 训练 — 三步构建高效自学闭环</div>
+      <div class="date">2026-03-31</div>
+    </header>
+
+    <nav class="toc">
+      <h2>目录</h2>
+      <a href="#step1"><span class="dot" style="background:var(--amber)"></span>第一步：从 Skilljar 提取学习材料</a>
+      <a href="#step2"><span class="dot" style="background:var(--purple)"></span>第二步：在 NotebookLM 中组织</a>
+      <a href="#step3"><span class="dot" style="background:var(--green)"></span>第三步：用 NotebookLM 生成学习内容</a>
+      <a href="#priority"><span class="dot" style="background:var(--coral)"></span>建议优先学习的课程</a>
+      <a href="#tips"><span class="dot" style="background:var(--cyan)"></span>实操 Tip</a>
+    </nav>
+
+    <!-- Step 1 -->
+    <section id="step1">
+      <h2>
+        🗂️ 第一步：从 Skilljar 提取学习材料
+        <span class="badge status-warn">EXTRACT</span>
+      </h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:16px;">
+        Skilljar 的课程内容大多是网页形式（文字 + 视频），NotebookLM 需要你喂入素材。以下三种方式按优先级排列：
+      </p>
+      <div class="step-list">
+        <div class="step open">
+          <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+            <h3>直接粘贴网页链接</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <p>NotebookLM 支持导入网页 URL。每学完一个 lesson，把页面 URL 加进去。这是最省力的方式。</p>
+            <div class="highlight">⚠️ 注意：Skilljar 有些内容可能在登录墙后面，NotebookLM 抓不到，此时需要改用下面的方式。</div>
+          </div>
+        </div>
+        <div class="step open">
+          <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+            <h3>手动复制文本</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <p>如果 URL 导入失败，直接选中课程页面的文字内容，粘贴成 Google Doc 或纯文本文件，再导入 NotebookLM。</p>
+          </div>
+        </div>
+        <div class="step open">
+          <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+            <h3>PDF 打印</h3>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="step-body">
+            <p>用浏览器的 <code>打印 → 另存为 PDF</code> 功能把每个 lesson 保存下来，然后上传到 NotebookLM。</p>
+            <div class="highlight">✅ 保真度最高，推荐用于格式复杂或含图表的课程页面。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section id="step2">
+      <h2>
+        📓 第二步：在 NotebookLM 中组织
+        <span class="badge status-info">ORGANIZE</span>
+      </h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:16px;">
+        建议按课程创建独立的 Notebook，让每个 Notebook 的上下文集中，生成的摘要和问题质量更高。
+      </p>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="label">Notebook 1</div>
+          <div class="value">Building with the Claude API</div>
+          <div class="detail">API 完整知识体系</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Notebook 2</div>
+          <div class="value">Introduction to MCP</div>
+          <div class="detail">MCP 协议与进阶主题</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Notebook 3</div>
+          <div class="value">Claude Code in Action</div>
+          <div class="detail">Claude Code 工作流强化</div>
+        </div>
+      </div>
+      <div class="alert alert-success">
+        <span class="icon">💡</span>
+        <span>每个 Notebook 独立隔离，上下文集中，NotebookLM 生成的摘要、flashcard 和测验题质量显著更高。</span>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section id="step3">
+      <h2>
+        🤖 第三步：用 NotebookLM 生成学习内容
+        <span class="badge status-done">GENERATE</span>
+      </h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:16px;">
+        导入素材后，可以在 NotebookLM 里使用以下功能：
+      </p>
+      <ul class="tips">
+        <li>
+          <span class="num">1</span>
+          <span>生成课程摘要和关键概念提炼，快速建立知识框架。</span>
+        </li>
+        <li>
+          <span class="num">2</span>
+          <span>要求生成 flashcard 格式问答，例如：<code>给我生成 20 个 Q&amp;A flashcard，涵盖这个 notebook 里的核心知识点</code></span>
+        </li>
+        <li>
+          <span class="num">3</span>
+          <span>让它生成测验题来检验理解深度，形成主动回忆练习。</span>
+        </li>
+        <li>
+          <span class="num">4</span>
+          <span>使用 <strong>Audio Overview</strong> 功能生成播客式讲解，通勤时收听，充分利用碎片时间。</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Priority -->
+    <section id="priority">
+      <h2>
+        🎯 建议优先学习的课程
+        <span class="badge status-issue">PRIORITY</span>
+      </h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:16px;">
+        结合当前使用 Claude Code、搭建 MCP server、管理 Amazon agents 项目的场景，优先级排列如下：
+      </p>
+      <table class="flow-table">
+        <thead>
+          <tr>
+            <th>优先级</th>
+            <th>课程</th>
+            <th>理由</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="priority-badge p1">P1</span></td>
+            <td>Claude Code in Action</td>
+            <td>直接强化现有的 Claude Code 工作流</td>
+          </tr>
+          <tr>
+            <td><span class="priority-badge p2">P2</span></td>
+            <td>Introduction to Agent Skills</td>
+            <td>正在建 agents 系统，直接对口</td>
+          </tr>
+          <tr>
+            <td><span class="priority-badge p2">P2</span></td>
+            <td>Introduction to Subagents</td>
+            <td>与 Agent Skills 配合使用</td>
+          </tr>
+          <tr>
+            <td><span class="priority-badge p3">P3</span></td>
+            <td>Introduction to MCP + MCP Advanced Topics</td>
+            <td>已经在用 MCP，进阶知识很实用</td>
+          </tr>
+          <tr>
+            <td><span class="priority-badge p4">P4</span></td>
+            <td>Building with the Claude API</td>
+            <td>巩固 API 使用的完整知识</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Tips -->
+    <section id="tips">
+      <h2>
+        ⚡ 实操 Tip
+        <span class="badge status-info">TIP</span>
+      </h2>
+      <p style="color:var(--text2);font-size:14px;margin-bottom:16px;">
+        Skilljar 里有些课程包含代码示例和练习，光看 flashcard 不够。建议采用双轨并行策略：
+      </p>
+      <div class="dual-track">
+        <div class="track-card track-concept">
+          <div class="track-label">概念复习轨</div>
+          <div class="track-desc">
+            使用 NotebookLM 生成 flashcard、摘要和 Audio Overview 播客，强化记忆与理解。
+          </div>
+        </div>
+        <div class="track-card track-code">
+          <div class="track-label">代码实操轨</div>
+          <div class="track-desc">
+            在 Claude Code 里实际跑一遍代码示例，通过动手实操加深理解，避免纸上谈兵。
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-success">
+        <span class="icon">✅</span>
+        <span>两条线并行 — <strong>概念记忆 + 动手实操</strong>，学习效果最佳。</span>
+      </div>
+    </section>
+
+    <footer>
+      Howard · Powered by Claude
+    </footer>
+
+  </div>
+
+  <script>
+    // All steps open by default; clicking header toggles
+    document.querySelectorAll('.step-header').forEach(header => {
+      header.addEventListener('click', () => {
+        header.parentElement.classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>
