@@ -158,15 +158,11 @@ def parse_append_response(raw: str) -> str:
 
 # ── index.html 操作 ───────────────────────────────────────────────────────────
 
-def update_index(filename: str, title: str, description: str, tags: list, date_str: str):
-    content = INDEX_HTML.read_text(encoding="utf-8")
-    if f'href="{filename}.html"' in content:
-        print(f"  ⚠ index.html 已有 {filename}.html，跳过")
-        return
+def _build_card(filename: str, title: str, description: str, tags: list, date_str: str) -> str:
     tags_html = "\n        ".join(
         f'<span class="doc-tag {TAG_CLASS.get(t, "tools")}">{t}</span>' for t in tags
     )
-    card = f"""
+    return f"""
     <a class="doc-card" href="{filename}.html">
       <div class="doc-meta">
         {tags_html}
@@ -176,22 +172,48 @@ def update_index(filename: str, title: str, description: str, tags: list, date_s
       <div class="doc-desc">{description}</div>
     </a>
 """
-    marker = "\n  </div>\n  <div class=\"footer\">"
+
+
+def _extract_card(content: str, filename: str) -> str | None:
+    """从 index.html 中提取某个文件对应的完整卡片 HTML。"""
+    pattern = rf'\n    <a class="doc-card" href="{re.escape(filename)}\.html">.*?</a>\n'
+    m = re.search(pattern, content, re.DOTALL)
+    return m.group(0) if m else None
+
+
+def update_index(filename: str, title: str, description: str, tags: list, date_str: str):
+    """新建：将卡片插到 docs-grid 最前面（最新在上）。"""
+    content = INDEX_HTML.read_text(encoding="utf-8")
+    if f'href="{filename}.html"' in content:
+        print(f"  ⚠ index.html 已有 {filename}.html，跳过")
+        return
+    card = _build_card(filename, title, description, tags, date_str)
+    marker = "<div class=\"docs-grid\">\n"
     if marker not in content:
         raise RuntimeError("index.html 结构不符合预期，找不到插入点")
-    INDEX_HTML.write_text(content.replace(marker, card + marker, 1), encoding="utf-8")
-    print(f"  ✓ index.html 已更新")
+    INDEX_HTML.write_text(content.replace(marker, marker + card, 1), encoding="utf-8")
+    print(f"  ✓ index.html 已更新（插入首位）")
 
 
 def update_index_date(filename: str, new_date: str):
-    """追加模式：仅更新 index 卡片上的日期。"""
+    """追加模式：更新日期，并将卡片移到最前面。"""
     content = INDEX_HTML.read_text(encoding="utf-8")
-    # 找到对应卡片的 doc-date span 并替换日期
-    pattern = rf'(href="{re.escape(filename)}\.html".*?<span class="doc-date">)([^<]+)(</span>)'
-    new_content, n = re.subn(pattern, rf'\g<1>{new_date}\g<3>', content, flags=re.DOTALL)
-    if n:
-        INDEX_HTML.write_text(new_content, encoding="utf-8")
-        print(f"  ✓ index.html 日期已更新为 {new_date}")
+    card = _extract_card(content, filename)
+    if not card:
+        print(f"  ⚠ index.html 未找到 {filename}.html 的卡片")
+        return
+    # 更新日期
+    updated_card = re.sub(
+        r'(<span class="doc-date">)[^<]+(</span>)',
+        rf'\g<1>{new_date}\g<2>',
+        card
+    )
+    # 移除旧卡片，插到最前面
+    content = content.replace(card, "")
+    marker = "<div class=\"docs-grid\">\n"
+    content = content.replace(marker, marker + updated_card, 1)
+    INDEX_HTML.write_text(content, encoding="utf-8")
+    print(f"  ✓ index.html 卡片已移至首位，日期更新为 {new_date}")
 
 
 # ── Git 推送 ──────────────────────────────────────────────────────────────────
