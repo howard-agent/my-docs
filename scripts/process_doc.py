@@ -223,12 +223,21 @@ def git_push(filename: str, title: str):
     cmds = [
         ["git", "-C", str(BASE_DIR), "add", f"{filename}.html", "index.html"],
         ["git", "-C", str(BASE_DIR), "commit", "-m", f"Add doc: {title}"],
-        ["git", "-C", str(BASE_DIR), "push"],
+        ["git", "-C", str(BASE_DIR), "push", "--porcelain"],
     ]
     for cmd in cmds:
         r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode != 0:
             raise RuntimeError(f"git 命令失败: {' '.join(cmd)}\n{r.stderr.strip()}")
+
+    # 推送后验证本地不再领先 origin
+    check = subprocess.run(
+        ["git", "-C", str(BASE_DIR), "status", "-sb"],
+        capture_output=True, text=True
+    )
+    if "ahead" in check.stdout:
+        raise RuntimeError(f"push 执行后仍领先 origin，可能未真正推送:\n{check.stdout.strip()}")
+
     print(f"  ✓ 已推送，GitHub Pages 将在约 30 秒后更新")
 
 
