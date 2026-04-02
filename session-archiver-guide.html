@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Archiver Agent 使用指南</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17; --bg2: #111827; --bg3: #1a2235; --card: #151d2e;
+  --border: #2a3650; --text: #e2e8f0; --text2: #94a3b8; --text3: #64748b;
+  --accent: #f59e0b; --accent2: #d97706;
+  --green: #34d399; --green-bg: rgba(52,211,153,.08);
+  --amber: #fbbf24; --amber-bg: rgba(251,191,36,.08);
+  --coral: #fb7185; --coral-bg: rgba(251,113,133,.08);
+  --purple: #a78bfa; --purple-bg: rgba(167,139,250,.08);
+  --cyan: #22d3ee; --cyan-bg: rgba(34,211,238,.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans SC', sans-serif; font-weight: 300; line-height: 1.8; min-height: 100vh; }
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text3); text-decoration: none; font-size: 13px; margin-bottom: 32px; transition: color .2s; }
+.back-link:hover { color: var(--accent); }
+header { text-align: center; padding: 40px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+header .icon { font-size: 48px; margin-bottom: 12px; }
+header h1 { font-size: 26px; font-weight: 700; letter-spacing: -.5px; background: linear-gradient(135deg, var(--accent), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+header .subtitle { color: var(--text3); font-size: 14px; }
+header .date { color: var(--text3); font-size: 13px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+nav.toc { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; }
+nav.toc h2 { font-size: 13px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+nav.toc a { display: flex; align-items: center; gap: 10px; padding: 8px 0; color: var(--text2); text-decoration: none; font-size: 14px; transition: color .2s; border-bottom: 1px solid rgba(42,54,80,.5); }
+nav.toc a:last-child { border-bottom: none; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+section { margin-bottom: 48px; }
+section h2 { font-size: 20px; font-weight: 500; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+.tag-green { background: var(--green-bg); color: var(--green); }
+.tag-amber { background: var(--amber-bg); color: var(--amber); }
+.tag-purple { background: var(--purple-bg); color: var(--purple); }
+.tag-cyan { background: var(--cyan-bg); color: var(--cyan); }
+p { color: var(--text2); font-size: 14px; line-height: 1.8; margin-bottom: 12px; }
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+.info-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; transition: border-color .2s; }
+.info-card:hover { border-color: var(--accent); }
+.info-card .label { font-size: 12px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .5px; }
+.info-card .value { font-size: 15px; font-weight: 400; }
+.info-card .detail { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+pre { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; overflow-x: auto; margin: 12px 0; }
+code { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--green); }
+.inline-code { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--amber); }
+.highlight { background: var(--amber-bg); border-left: 3px solid var(--amber); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 13px; color: var(--text2); }
+.highlight.info { background: var(--cyan-bg); border-left-color: var(--cyan); }
+.flow { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+.flow-item { display: flex; align-items: flex-start; gap: 12px; }
+.flow-line { display: flex; flex-direction: column; align-items: center; }
+.flow-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 6px; }
+.flow-connector { width: 2px; height: 28px; background: var(--border); margin: 2px 0; }
+.flow-item:last-child .flow-connector { display: none; }
+.flow-content { padding-bottom: 16px; }
+.flow-content strong { font-size: 14px; color: var(--text); font-weight: 500; }
+.flow-content p { margin: 2px 0 0; font-size: 13px; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 16px 0; font-size: 13px; }
+thead th { background: var(--bg3); padding: 10px 14px; text-align: left; font-weight: 500; font-size: 12px; color: var(--text3); border-bottom: 1px solid var(--border); }
+thead th:first-child { border-radius: 8px 0 0 0; }
+thead th:last-child { border-radius: 0 8px 0 0; }
+tbody td { padding: 10px 14px; border-bottom: 1px solid rgba(42,54,80,.4); color: var(--text2); }
+tbody tr:last-child td { border-bottom: none; }
+.footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; color: var(--text3); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="index.html">← 返回目录</a>
+
+  <header>
+    <div class="icon">🗂️</div>
+    <h1>Session Archiver Agent 使用指南</h1>
+    <div class="subtitle">自动归档 Claude Code 工作记录 · 持续累积知识库</div>
+    <div class="date">2026-04-02</div>
+  </header>
+
+  <nav class="toc">
+    <h2>目录</h2>
+    <a href="#what"><span class="dot" style="background:var(--accent)"></span>它是什么</a>
+    <a href="#how"><span class="dot" style="background:var(--purple)"></span>如何调用</a>
+    <a href="#output"><span class="dot" style="background:var(--green)"></span>输出格式</a>
+    <a href="#append"><span class="dot" style="background:var(--cyan)"></span>追加模式（同话题更新）</a>
+    <a href="#tips"><span class="dot" style="background:var(--amber)"></span>使用技巧</a>
+  </nav>
+
+  <section id="what">
+    <h2>🤖 它是什么 <span class="badge tag-purple">Agent</span></h2>
+    <p><strong>session-archiver</strong> 是一个专门用于归档 Claude Code 工作记录的 subagent。每次完成一个工作 session（调试、配置、功能开发等），由它提取关键信息，生成结构化中文 Markdown 文档，自动投递到 <span class="inline-code">inbox/</span>，触发发布流水线。</p>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">Agent 名称</div>
+        <div class="value">session-archiver</div>
+        <div class="detail">配置文件：~/.claude/agents/session-archiver.md</div>
+      </div>
+      <div class="info-card">
+        <div class="label">模型</div>
+        <div class="value">Claude Sonnet</div>
+        <div class="detail">工具权限：Glob / Grep / Read / Edit / Write</div>
+      </div>
+      <div class="info-card">
+        <div class="label">输出目录</div>
+        <div class="value">inbox/</div>
+        <div class="detail">命名格式：topic_YYYYMMDD.md</div>
+      </div>
+      <div class="info-card">
+        <div class="label">文档语言</div>
+        <div class="value">中文</div>
+        <div class="detail">代码块 / 路径保留英文</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>📞 如何调用 <span class="badge tag-green">调用方式</span></h2>
+    <p>有三种方式触发 session-archiver：</p>
+
+    <p style="margin-top:16px"><strong>方式一：自然语言（最常用）</strong></p>
+    <p>在 session 快结束时，直接对 Claude 说：</p>
+    <pre><code>帮我归档这个 session
+archive this session
+总结今天的工作并归档</code></pre>
+
+    <p style="margin-top:16px"><strong>方式二：斜杠命令</strong></p>
+    <pre><code>/session-archiver</code></pre>
+
+    <p style="margin-top:16px"><strong>方式三：在消息中明确引用</strong></p>
+    <pre><code>用 session-archiver agent 把今天的网络配置工作归档一下</code></pre>
+
+    <div class="highlight info">
+      <strong>触发时机建议：</strong>完成一个独立功能 / 解决一个 bug / 配置完成某个系统后，即可触发。不必等到整个项目结束。
+    </div>
+  </section>
+
+  <section id="output">
+    <h2>📄 输出格式 <span class="badge tag-amber">结构</span></h2>
+    <p>每次归档生成的 MD 文件固定包含五个章节：</p>
+    <table>
+      <thead><tr><th>章节</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td><code>背景</code></td><td>为什么做这件事？问题起因或业务需求</td></tr>
+        <tr><td><code>关键操作</code></td><td>按时间顺序的步骤，含 shell 命令和配置变更</td></tr>
+        <tr><td><code>结果</code></td><td>成功 / 失败 / 部分完成，以及验证方式</td></tr>
+        <tr><td><code>遗留问题</code></td><td>未解决事项，无则写「无」</td></tr>
+        <tr><td><code>相关文件</code></td><td>所有创建、修改、删除的文件路径</td></tr>
+      </tbody>
+    </table>
+    <p>文件命名示例：</p>
+    <pre><code>tailscale_network_20260401.md
+my_docs_automation_20260402.md
+jhfinance_erp_sync_20260330.md</code></pre>
+    <div class="highlight">
+      <strong>隐私保护：</strong>agent 会自动将密码、IP、Token 等敏感信息替换为 <code>[已脱敏]</code>，再由 watcher 做第二轮脱敏。
+    </div>
+  </section>
+
+  <section id="append">
+    <h2>🔄 追加模式 <span class="badge tag-cyan">同话题更新</span></h2>
+    <p>如果同一话题（如 <span class="inline-code">tailscale_network</span>）已有对应 HTML，新的归档文件会自动追加为新章节，而不是创建新 HTML。</p>
+
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-content">
+          <strong>Day 1：tailscale_network_20260401.md 投入 inbox/</strong>
+          <p>无对应 HTML → 新建 tailscale-network.html，加入 index</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-content">
+          <strong>Day 2：tailscale_network_20260402.md 投入 inbox/</strong>
+          <p>tailscale-network.html 已存在 → 追加新日期章节，index 卡片日期更新并移到首位</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-line"><div class="flow-dot"></div></div>
+        <div class="flow-content">
+          <strong>结果</strong>
+          <p>一个话题始终只有一个 HTML，内容按日期累积</p>
+        </div>
+      </div>
+    </div>
+
+    <p>判断逻辑：文件名符合 <span class="inline-code">topic_YYYYMMDD.md</span> 格式，且 <span class="inline-code">topic.html</span>（下划线转连字符）已存在，则触发追加模式。</p>
+  </section>
+
+  <section id="tips">
+    <h2>💡 使用技巧 <span class="badge tag-amber">建议</span></h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">话题命名</div>
+        <div class="value">要具体</div>
+        <div class="detail">feishu_api_sync 而非 api_work</div>
+      </div>
+      <div class="info-card">
+        <div class="label">文档长度</div>
+        <div class="value">控制在 200 行内</div>
+        <div class="detail">agent 自动裁剪冗余内容</div>
+      </div>
+      <div class="info-card">
+        <div class="label">触发频率</div>
+        <div class="value">每个独立任务结束后</div>
+        <div class="detail">不必等整个项目完成</div>
+      </div>
+      <div class="info-card">
+        <div class="label">查看处理状态</div>
+        <div class="value">tail -f inbox/watcher.log</div>
+        <div class="detail">实时观察归档发布进度</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">Howard · Powered by Claude</div>
+</div>
+</body>
+</html>
