@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EBL TikTok 官方账号代运营方案 - QuickNow</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ebl-green: #00A651;
+    --ebl-dark-green: #007A3D;
+    --ebl-light-green: #4CD964;
+    --ebl-pale-green: #E8F5E9;
+    --ebl-mint: #A5D6A7;
+    --dark: #1A1A2E;
+    --gray-dark: #2E2E3A;
+    --gray: #6B7280;
+    --light: #F8FAF9;
+    --white: #FFFFFF;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', 'Inter', sans-serif;
+    background: #f0f0f0;
+    color: var(--dark);
+  }
+
+  .page {
+    width: 1280px;
+    height: 720px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    background: var(--white);
+    page-break-after: always;
+  }
+
+  /* ========= PAGE 1: COVER ========= */
+  .cover {
+    background: linear-gradient(135deg, #003D1A 0%, #005C2A 30%, var(--ebl-green) 70%, var(--ebl-light-green) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+  }
+  .cover .brand-tag {
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 20px;
+  }
+  .cover h1 {
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .cover h2 {
+    font-size: 26px;
+    font-weight: 300;
+    opacity: 0.9;
+    margin-bottom: 40px;
+  }
+  .cover .meta-row {
+    display: flex;
+    gap: 40px;
+    font-size: 14px;
+    opacity: 0.75;
+    margin-top: 20px;
+  }
+  .cover .meta-row span { display: flex; align-items: center; gap: 6px; }
+  .cover .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 10px 28px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .cover-corner {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .cover-corner.tl { top: -100px; left: -100px; }
+  .cover-corner.br { bottom: -120px; right: -80px; width: 400px; height: 400px; }
+  .cover .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .cover .logo-row .x { font-size: 18px; opacity: 0.5; }
+
+  /* ========= COMMON LAYOUT ========= */
+  .page-header {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 60px;
+    background: var(--white);
+    border-bottom: 3px solid var(--ebl-green);
+  }
+  .page-header .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ebl-green);
+  }
+  .page-header .page-num {
+    font-size: 13px;
+    color: var(--gray);
+  }
+  .page-body {
+    padding: 40px 60px;
+    height: 650px;
+    display: flex;
+    flex-direction: column;
+  }
+  .page-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  .page-subtitle {
+    font-size: 15px;
+    color: var(--gray);
+    margin-bottom: 30px;
+  }
+  .green-accent {
+    color: var(--ebl-green);
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    gap: 20px;
+  }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--ebl-pale-green);
+    border-radius: 16px;
+    padding: 28px;
+    border: 1px solid rgba(0,166,81,0.1);
+    transition: all 0.3s;
+  }
+  .card.white { background: var(--white); border: 1px solid #e0e0e0; }
+  .card.dark { background: var(--dark); color: white; }
+  .card .card-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  .card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--ebl-dark-green);
+  }
+  .card.dark h3 { color: var(--ebl-light-green); }
+  .card p { font-size: 13px; line-height: 1.7; color: var(--gray-dark); }
+  .card.dark p { color: rgba(255,255,255,0.7); }
+
+  /* Stats */
+  .stat-row {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  .stat-item { text-align: center; flex: 1; }
+  .stat-value {
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--ebl-green);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--gray);
+    margin-top: 6px;
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .data-table th {
+    background: var(--ebl-green);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .data-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid #eee;
+  }
+  .data-table tr:nth-child(even) { background: var(--ebl-pale-green); }
+  .data-table .highlight { font-weight: 700; color: var(--ebl-green); }
+
+  /* Timeline */
+  .timeline { display: flex; gap: 0; margin-top: 20px; }
+  .timeline-item {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    padding: 20px 16px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--ebl-green);
+    border: 4px solid var(--ebl-pale-green);
+  }
+  .timeline-item::after {
+    content: '';
+    position: absolute;
+    top: 9px;
+    left: calc(50% + 14px);
+    width: calc(100% - 28px);
+    height: 2px;
+    background: var(--ebl-mint);
+  }
+  .timeline-item:last-child::after { display: none; }
+  .timeline-item h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ebl-dark-green);
+    margin-top: 20px;
+    margin-bottom: 6px;
+  }
+  .timeline-item p { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+  /* Pricing */
+  .pricing-box {
+    background: linear-gradient(135deg, #003D1A, var(--ebl-green));
+    border-radius: 20px;
+    padding: 40px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 50px;
+  }
+  .pricing-box .price {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .pricing-box .price .unit { font-size: 22px; font-weight: 400; opacity: 0.7; }
+  .pricing-box .price .period { font-size: 16px; font-weight: 300; opacity: 0.6; }
+  .pricing-box ul {
+    list-style: none;
+    font-size: 15px;
+    line-height: 2;
+  }
+  .pricing-box ul li::before { content: "\2713  "; color: var(--ebl-light-green); font-weight: 700; }
+
+  .guarantee-strip {
+    margin-top: 20px;
+    background: var(--ebl-pale-green);
+    border: 2px solid var(--ebl-green);
+    border-radius: 12px;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .guarantee-strip .icon { font-size: 40px; }
+  .guarantee-strip .text h4 { font-size: 16px; font-weight: 700; color: var(--ebl-dark-green); }
+  .guarantee-strip .text p { font-size: 13px; color: var(--gray); margin-top: 4px; }
+
+  /* Divider */
+  .divider {
+    width: 60px;
+    height: 4px;
+    background: var(--ebl-green);
+    border-radius: 2px;
+    margin: 12px 0 20px 0;
+  }
+
+  .two-col { display: flex; gap: 40px; flex: 1; }
+  .two-col .col { flex: 1; }
+
+  .tag {
+    display: inline-block;
+    background: var(--ebl-green);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+  }
+
+  .footer-note {
+    position: absolute;
+    bottom: 20px;
+    left: 60px;
+    right: 60px;
+    font-size: 11px;
+    color: var(--gray);
+    text-align: center;
+    opacity: 0.6;
+  }
+
+  @media print {
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    body { background: white; }
+  }
+</style>
+<style>
+#pw-overlay{position:fixed;inset:0;z-index:9999;background:#0a0c14;display:flex;align-items:center;justify-content:center}
+#pw-box{background:#12161f;border:1px solid #2a3650;border-radius:16px;padding:40px 48px;text-align:center;width:320px}
+#pw-box h2{font-size:15px;font-weight:400;color:#94a3b8;margin-bottom:24px}
+#pw-input{width:100%;padding:12px 16px;background:#0a0c14;border:1px solid #2a3650;border-radius:8px;color:#e2e8f0;font-size:20px;letter-spacing:8px;text-align:center;outline:none;transition:border-color .2s}
+#pw-input:focus{border-color:#f59e0b}
+#pw-input.error{border-color:#fb7185;animation:shake .3s}
+#pw-hint{font-size:12px;color:#ef4444;margin-top:10px;height:16px}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+</style>
+</head>
+<body>
+<div id="pw-overlay">
+  <div id="pw-box">
+    <h2>🔒 请输入访问密码</h2>
+    <input id="pw-input" type="password" maxlength="20" placeholder="······" autocomplete="off" autofocus/>
+    <div id="pw-hint"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var h='4aec381049020b69cf1b0286d82dae20';
+  var KEY='pw_ebl_tiktok';
+  function md5(s){function safeAdd(x,y){var lsw=(x&0xffff)+(y&0xffff);return(((x>>16)+(y>>16)+(lsw>>16))<<16)|(lsw&0xffff)}function bitRotateLeft(n,c){return(n<<c)|(n>>>(32-c))}function md5cmn(q,a,b,x,s,t){return safeAdd(bitRotateLeft(safeAdd(safeAdd(a,q),safeAdd(x,t)),s),b)}function md5ff(a,b,c,d,x,s,t){return md5cmn((b&c)|((~b)&d),a,b,x,s,t)}function md5gg(a,b,c,d,x,s,t){return md5cmn((b&d)|(c&(~d)),a,b,x,s,t)}function md5hh(a,b,c,d,x,s,t){return md5cmn(b^c^d,a,b,x,s,t)}function md5ii(a,b,c,d,x,s,t){return md5cmn(c^(b|(~d)),a,b,x,s,t)}var m=[],i,l=s.length*8;for(i=0;i<s.length;i++){m[i>>2]|=s.charCodeAt(i)<<((i%4)*8)}m[l>>5]|=0x80<<(l%32);m[(((l+64)>>>9)<<4)+14]=l;var a=1732584193,b=-271733879,c=-1732584194,d=271733878;for(i=0;i<m.length;i+=16){var A=a,B=b,C=c,D=d;a=md5ff(a,b,c,d,m[i],7,-680876936);d=md5ff(d,a,b,c,m[i+1],12,-389564586);c=md5ff(c,d,a,b,m[i+2],17,606105819);b=md5ff(b,c,d,a,m[i+3],22,-1044525330);a=md5ff(a,b,c,d,m[i+4],7,-176418897);d=md5ff(d,a,b,c,m[i+5],12,1200080426);c=md5ff(c,d,a,b,m[i+6],17,-1473231341);b=md5ff(b,c,d,a,m[i+7],22,-45705983);a=md5ff(a,b,c,d,m[i+8],7,1770035416);d=md5ff(d,a,b,c,m[i+9],12,-1958414417);c=md5ff(c,d,a,b,m[i+10],17,-42063);b=md5ff(b,c,d,a,m[i+11],22,-1990404162);a=md5ff(a,b,c,d,m[i+12],7,1804603682);d=md5ff(d,a,b,c,m[i+13],12,-40341101);c=md5ff(c,d,a,b,m[i+14],17,-1502002290);b=md5ff(b,c,d,a,m[i+15],22,1236535329);a=md5gg(a,b,c,d,m[i+1],5,-165796510);d=md5gg(d,a,b,c,m[i+6],9,-1069501632);c=md5gg(c,d,a,b,m[i+11],14,643717713);b=md5gg(b,c,d,a,m[i],20,-373897302);a=md5gg(a,b,c,d,m[i+5],5,-701558691);d=md5gg(d,a,b,c,m[i+10],9,38016083);c=md5gg(c,d,a,b,m[i+15],14,-660478335);b=md5gg(b,c,d,a,m[i+4],20,-405537848);a=md5gg(a,b,c,d,m[i+9],5,568446438);d=md5gg(d,a,b,c,m[i+14],9,-1019803690);c=md5gg(c,d,a,b,m[i+3],14,-187363961);b=md5gg(b,c,d,a,m[i+8],20,1163531501);a=md5gg(a,b,c,d,m[i+13],5,-1444681467);d=md5gg(d,a,b,c,m[i+2],9,-51403784);c=md5gg(c,d,a,b,m[i+7],14,1735328473);b=md5gg(b,c,d,a,m[i+12],20,-1926607734);a=md5hh(a,b,c,d,m[i+5],4,-378558);d=md5hh(d,a,b,c,m[i+8],11,-2022574463);c=md5hh(c,d,a,b,m[i+11],16,1839030562);b=md5hh(b,c,d,a,m[i+14],23,-35309556);a=md5hh(a,b,c,d,m[i+1],4,-1530992060);d=md5hh(d,a,b,c,m[i+4],11,1272893353);c=md5hh(c,d,a,b,m[i+7],16,-155497632);b=md5hh(b,c,d,a,m[i+10],23,-1094730640);a=md5hh(a,b,c,d,m[i+13],4,681279174);d=md5hh(d,a,b,c,m[i],11,-358537222);c=md5hh(c,d,a,b,m[i+3],16,-722521979);b=md5hh(b,c,d,a,m[i+6],23,76029189);a=md5hh(a,b,c,d,m[i+9],4,-640364487);d=md5hh(d,a,b,c,m[i+12],11,-421815835);c=md5hh(c,d,a,b,m[i+15],16,530742520);b=md5hh(b,c,d,a,m[i+2],23,-995338651);a=md5ii(a,b,c,d,m[i],6,-198630844);d=md5ii(d,a,b,c,m[i+7],10,1126891415);c=md5ii(c,d,a,b,m[i+14],15,-1416354905);b=md5ii(b,c,d,a,m[i+5],21,-57434055);a=md5ii(a,b,c,d,m[i+12],6,1700485571);d=md5ii(d,a,b,c,m[i+3],10,-1894986606);c=md5ii(c,d,a,b,m[i+10],15,-1051523);b=md5ii(b,c,d,a,m[i+1],21,-2054922799);a=md5ii(a,b,c,d,m[i+8],6,1873313359);d=md5ii(d,a,b,c,m[i+15],10,-30611744);c=md5ii(c,d,a,b,m[i+6],15,-1560198380);b=md5ii(b,c,d,a,m[i+13],21,1309151649);a=md5ii(a,b,c,d,m[i+4],6,-145523070);d=md5ii(d,a,b,c,m[i+11],10,-1120210379);c=md5ii(c,d,a,b,m[i+2],15,718787259);b=md5ii(b,c,d,a,m[i+9],21,-343485551);a=safeAdd(a,A);b=safeAdd(b,B);c=safeAdd(c,C);d=safeAdd(d,D)}var r='';for(i=0;i<4;i++){var w=[a,b,c,d][i];for(var j=0;j<4;j++)r+=('0'+(((w>>>(j*8))&0xff)).toString(16)).slice(-2)}return r}
+  if(sessionStorage.getItem(KEY)==='1'){document.getElementById('pw-overlay').style.display='none';return}
+  document.getElementById('pw-input').addEventListener('keydown',function(e){
+    if(e.key!=='Enter')return;
+    if(md5(this.value.trim())===h){document.getElementById('pw-overlay').style.display='none';sessionStorage.setItem(KEY,'1')}
+    else{var el=this;el.classList.add('error');document.getElementById('pw-hint').textContent='密码错误';setTimeout(function(){el.classList.remove('error');el.value='';document.getElementById('pw-hint').textContent=''},600)}
+  });
+})();
+</script>
+
+<!-- ========= PAGE 1: COVER ========= -->
+<div class="page cover">
+  <div class="cover-corner tl"></div>
+  <div class="cover-corner br"></div>
+  <div class="brand-tag">Genuine Reserve &middot; QuickNow</div>
+  <div class="logo-row">
+    <span>QuickNow 快脑</span>
+    <span class="x">&times;</span>
+    <span>EBL 乐能创新</span>
+  </div>
+  <h1>TikTok 官方账号<br>代运营方案</h1>
+  <h2>用专业内容驱动品牌增长 &middot; 让产品快速出圈</h2>
+  <div class="badge">3个月 50万+ 播放量承诺 &bull; Amazon 业绩可见提升</div>
+  <div class="meta-row">
+    <span>2026年4月</span>
+    <span>方案有效期 30 天</span>
+    <span>北美市场</span>
+  </div>
+</div>
+
+<!-- ========= PAGE 2: EBL CURRENT STATUS ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">02 / 10</span>
+  </div>
+  <div class="page-body">
+    <div class="page-title">EBL 品牌 <span class="green-accent">现状分析</span></div>
+    <div class="page-subtitle">EBL Portable Generator &mdash; Amazon ASIN: B0G5YVZWRF &bull; 品类: Generators</div>
+
+    <div class="stat-row">
+      <div class="stat-item">
+        <div class="stat-value">$196K+</div>
+        <div class="stat-label">累计5个月销售额</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">1,675</div>
+        <div class="stat-label">累计销量(台)</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">#57</div>
+        <div class="stat-label">Generators 品类最高排名</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">4.4</div>
+        <div class="stat-label">产品评分 (185条评价)</div>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>月份</th>
+          <th>销量 (台)</th>
+          <th>销售额</th>
+          <th>均价</th>
+          <th>趋势</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2025年12月</td>
+          <td>77</td>
+          <td>$11,769</td>
+          <td>$152.85</td>
+          <td class="highlight">新品上线期</td>
+        </tr>
+        <tr>
+          <td>2026年1月</td>
+          <td class="highlight">453</td>
+          <td class="highlight">$65,459</td>
+          <td>$144.50</td>
+          <td class="highlight">爆发增长</td>
+        </tr>
+        <tr>
+          <td>2026年2月</td>
+          <td>394</td>
+          <td>$40,803</td>
+          <td>$103.56</td>
+          <td>稳中有降</td>
+        </tr>
+        <tr>
+          <td>2026年3月</td>
+          <td>387</td>
+          <td>$41,792</td>
+          <td>$107.99</td>
+          <td>趋于平稳</td>
+        </tr>
+        <tr>
+          <td>2026年4月(预估)</td>
+          <td>364</td>
+          <td>$36,396</td>
+          <td>$99.99</td>
+          <td style="color:#e53e3e">下滑趋势</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:20px; display:flex; gap:20px;">
+      <div class="card" style="flex:1; background:#FFF3E0; border-color:#FFA726;">
+        <h3 style="color:#E65100">核心挑战</h3>
+        <p>品类排名从1月#57滑落至4月#143，销量环比连续下降。<strong>缺乏品牌内容与社交声量</strong>是核心瓶颈 &mdash; TikTok 官方账号 @ebl.online.store 缺乏专业运营，错失了海量精准流量。</p>
+      </div>
+      <div class="card" style="flex:1;">
+        <h3>增长机会</h3>
+        <p>便携储能赛道在TikTok上搜索量暴涨，户外/应急/露营内容热度持续攀升。<strong>专业TikTok内容运营可直接反哺Amazon转化</strong>，帮助EBL重回增长轨道。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= PAGE 3: WHY TIKTOK ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">03 / 10</span>
+  </div>
+  <div class="page-body">
+    <div class="page-title">为什么 <span class="green-accent">TikTok</span> 是 EBL 的必争之地</div>
+    <div class="page-subtitle">全球最具增长力的社交平台 &times; 最适合消费电子品的内容生态</div>
+
+    <div class="stat-row" style="margin-top:10px;">
+      <div class="stat-item">
+        <div class="stat-value">15亿+</div>
+        <div class="stat-label">全球月活用户</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">95分钟</div>
+        <div class="stat-label">用户日均使用时长</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">40亿+</div>
+        <div class="stat-label">全球总下载量</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">#1</div>
+        <div class="stat-label">超越YouTube &amp; Netflix</div>
+      </div>
+    </div>
+
+    <div class="card-grid card-grid-3" style="margin-top:10px;">
+      <div class="card">
+        <div class="card-icon" style="font-size:30px;">&#x1F50B;</div>
+        <h3>品类天然适配</h3>
+        <p>户外储能、露营装备、应急电源类内容在TikTok上拥有数十亿播放量，用户画像与EBL买家高度重合</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="font-size:30px;">&#x1F4B0;</div>
+        <h3>低成本精准获客</h3>
+        <p>自然流量+内容种草模式，CPM远低于传统广告投放，一条爆款视频=持续数月的免费曝光</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="font-size:30px;">&#x1F504;</div>
+        <h3>Amazon 流量飞轮</h3>
+        <p>TikTok种草 &rarr; 搜索品牌词 &rarr; Amazon转化 &rarr; 提升BSR排名 &rarr; 更多自然流量，形成增长闭环</p>
+      </div>
+    </div>
+
+    <div style="margin-top:25px; background: linear-gradient(135deg, #003D1A, var(--ebl-green)); border-radius:16px; padding:24px 32px; color:white; display:flex; align-items:center; gap:20px;">
+      <div style="font-size:42px;">&#x1F3AF;</div>
+      <div>
+        <div style="font-size:18px; font-weight:700;">TikTok 内容 &rarr; Amazon 增量的核心逻辑</div>
+        <div style="font-size:14px; opacity:0.85; margin-top:6px; line-height:1.6;">
+          <strong>品牌认知提升：</strong>用户在TikTok看到产品 &rarr; 产生兴趣和信任 &rarr; 搜索品牌名/产品名 &rarr; 进入Amazon完成购买。<br>
+          <strong>数据验证：</strong>品牌型关键词搜索量提升可直接带动Amazon自然排名和转化率双重增长，TikTok曝光量每增长10万次，品牌词搜索量平均提升15-25%。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= PAGE 4: ABOUT US ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">04 / 10</span>
+  </div>
+  <div class="page-body">
+    <div class="page-title">关于 <span class="green-accent">QuickNow 快脑工作室</span></div>
+    <div class="page-subtitle">Genuine Reserve 旗下 &bull; 深耕TikTok出海营销的内容综合型机构</div>
+
+    <div class="two-col" style="margin-top:10px;">
+      <div class="col">
+        <div class="stat-row" style="margin-bottom:20px;">
+          <div class="stat-item">
+            <div class="stat-value">100+</div>
+            <div class="stat-label">服务出海品牌</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">100+</div>
+            <div class="stat-label">千万级爆款视频</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="tag">团队优势</div>
+          <p><strong>中国深圳 + 美国加州</strong>双基地运营，具备广电级内容审美、专业技术团队、独家海外达人资源。拥有TikTok官方TAP、MCN双资质认证。</p>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="tag">核心能力</div>
+          <p><strong>产品脚本策划</strong> &bull; 专业拍摄与剪辑 &bull; <strong>TikTok平台优化</strong> &bull; 本地化配音字幕 &bull; <strong>AIGC技术赋能</strong> &bull; 数据驱动迭代</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">品牌合作</div>
+          <p>深度合作 <strong>OIOI、Plaud.AI、SPELEC</strong> 等头部出海品牌，帮助100+品牌在美国实现持续增长。</p>
+        </div>
+      </div>
+
+      <div class="col">
+        <div style="background:var(--ebl-pale-green); border-radius:16px; padding:24px; margin-bottom:16px;">
+          <h3 style="font-size:16px; color:var(--ebl-dark-green); margin-bottom:12px;">核心团队</h3>
+          <div style="font-size:13px; line-height:2.2;">
+            <strong>Zena - 总导演</strong><br> 前广电集团编导 &bull; 多条千万级TikTok爆款<br>
+            <strong>Jianian - 拍摄/剪辑</strong><br> 多平台运营专家 &bull; 多次0到万粉级打造<br>
+            <strong>Gelin - 拍摄/剪辑</strong><br> 专业素材处理 &bull; 出色视觉叙事能力<br>
+            <strong>Hongju - 拍摄/剪辑</strong><br> AIGC技术开发 &bull; 全流程后期专家
+          </div>
+        </div>
+
+        <div class="card dark">
+          <h3>我们的承诺</h3>
+          <p>从脚本策划到成片交付<strong>最快仅需24小时</strong>，工业化流程保障产出效率与品质，用真实有趣的内容让产品快速出圈。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= PAGE 5: SERVICE OVERVIEW ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">05 / 10</span>
+  </div>
+  <div class="page-body">
+    <div class="page-title">代运营 <span class="green-accent">服务内容总览</span></div>
+    <div class="page-subtitle">@ebl.online.store 官方账号全托管运营方案</div>
+
+    <div class="card-grid card-grid-2" style="margin-top:10px;">
+      <div class="card">
+        <div class="card-icon" style="font-size:30px;">&#x1F3AC;</div>
+        <h3>专业内容制作</h3>
+        <p>每月 <strong>6-8条原创短视频</strong>，涵盖产品功能展示、使用场景演绎、户外测评、应急实用等多种内容形态。配备专业团队负责脚本、拍摄、剪辑全流程。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="font-size:30px;">&#x1F4CA;</div>
+        <h3>账号运营管理</h3>
+        <p>账号定位与视觉风格统一、发布时间优化、Hashtag策略、互动维护、评论管理、用户社群运营，打造有调性的品牌官方账号。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="font-size:30px;">&#x1F9E0;</div>
+        <h3>数据驱动优化</h3>
+        <p>每周数据复盘分析，追踪播放量、完播率、互动率等核心指标，持续迭代内容策略与脚本方向，<strong>每月出具运营报告</strong>。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="font-size:30px;">&#x1F310;</div>
+        <h3>Amazon 联动运营</h3>
+        <p>设计品牌种草 &rarr; 搜索 &rarr; 购买的完整转化路径。视频内容引导用户搜索品牌关键词、追踪<strong>品牌词搜索量</strong>与<strong>Amazon流量变化</strong>。</p>
+      </div>
+    </div>
+
+    <div style="margin-top:25px; padding:0 10px;">
+      <div class="page-title" style="font-size:20px; margin-bottom:20px;">服务流程</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <h4>需求沟通</h4>
+          <p>了解EBL产品线<br>明确目标市场</p>
+        </div>
+        <div class="timeline-item">
+          <h4>策略定制</h4>
+          <p>账号定位规划<br>内容日历制定</p>
+        </div>
+        <div class="timeline-item">
+          <h4>脚本创作</h4>
+          <p>卖点提炼 + 创意<br>客户确认后执行</p>
+        </div>
+        <div class="timeline-item">
+          <h4>拍摄剪辑</h4>
+          <p>专业团队拍摄<br>精剪/调色/配音</p>
+        </div>
+        <div class="timeline-item">
+          <h4>发布优化</h4>
+          <p>黄金时段发布<br>标签/标题优化</p>
+        </div>
+        <div class="timeline-item">
+          <h4>数据复盘</h4>
+          <p>周报 + 月报<br>持续策略迭代</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= PAGE 6: CONTENT STRATEGY ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">06 / 10</span>
+  </div>
+  <div class="page-body">
+    <div class="page-title">EBL <span class="green-accent">内容策略规划</span></div>
+    <div class="page-subtitle">基于产品特性与平台趋势定制的内容矩阵</div>
+
+    <div class="two-col" style="margin-top:10px;">
+      <div class="col">
+        <h3 style="font-size:18px; margin-bottom:16px; color:var(--ebl-dark-green);">内容类型矩阵</h3>
+
+        <div class="card" style="margin-bottom:12px; padding:18px 24px;">
+          <div>
+            <div class="tag">占比 30%</div>
+            <h3 style="font-size:15px; margin-bottom:4px;">产品功能展示</h3>
+            <p style="font-size:12px;">大容量演示、多接口充电、快充对比测试</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px; padding:18px 24px;">
+          <div>
+            <div class="tag">占比 30%</div>
+            <h3 style="font-size:15px; margin-bottom:4px;">场景化内容</h3>
+            <p style="font-size:12px;">露营/户外/停电应急/房车旅行/家庭备用</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px; padding:18px 24px;">
+          <div>
+            <div class="tag">占比 25%</div>
+            <h3 style="font-size:15px; margin-bottom:4px;">热门趋势蹭热点</h3>
+            <p style="font-size:12px;">结合热门话题/挑战/BGM创作关联内容</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:12px; padding:18px 24px;">
+          <div>
+            <div class="tag">占比 15%</div>
+            <h3 style="font-size:15px; margin-bottom:4px;">品牌故事/UGC</h3>
+            <p style="font-size:12px;">品牌理念传达、用户故事征集、互动内容</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <h3 style="font-size:18px; margin-bottom:16px; color:var(--ebl-dark-green);">内容策略亮点</h3>
+
+        <div class="card" style="margin-bottom:16px; background:var(--dark); color:white;">
+          <h3 style="color:var(--ebl-light-green);">爆款脚本方法论</h3>
+          <p style="color:rgba(255,255,255,0.8);">基于已验证的爆款模板快速生成创意，前3秒钩子 + 产品展示 + CTA的黄金结构，单条视频潜力10万+播放</p>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <h3>本地化表达</h3>
+          <p>英语母语级配音、了解北美用户文化与审美偏好、使用当地热点话题引发共鸣</p>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <h3>A/B 测试机制</h3>
+          <p>同一产品多角度脚本测试，快速筛选最优方向。低成本试错、数据验证后放大投入</p>
+        </div>
+
+        <div class="card">
+          <h3>Amazon 引流闭环</h3>
+          <p>每条视频植入品牌关键词引导，推动 "EBL portable generator" 搜索量增长，直接转化Amazon销量</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= PAGE 7: 3-MONTH PLAN ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">07 / 10</span>
+  </div>
+  <div class="page-body">
+    <div class="page-title">3个月 <span class="green-accent">运营里程碑</span></div>
+    <div class="page-subtitle">科学的阶段规划，逐步实现 50万+ 播放量与 Amazon 业绩增长</div>
+
+    <div class="card-grid card-grid-3" style="margin-top:10px;">
+      <div class="card" style="border-left: 4px solid var(--ebl-green);">
+        <div class="tag">第1个月</div>
+        <h3>冷启动 &amp; 基础搭建</h3>
+        <div class="divider"></div>
+        <p style="line-height:2;">
+          &bull; 账号定位与品牌视觉统一<br>
+          &bull; 产品深度了解 &amp; 卖点提炼<br>
+          &bull; 产出 6-8 条原创视频<br>
+          &bull; 发布 &amp; 测试多种内容类型<br>
+          &bull; 初步数据分析 &amp; 策略调整
+        </p>
+        <div style="margin-top:16px; background:white; border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--ebl-green);">5万+</div>
+          <div style="font-size:12px; color:var(--gray);">目标累计播放</div>
+        </div>
+      </div>
+
+      <div class="card" style="border-left: 4px solid var(--ebl-green);">
+        <div class="tag">第2个月</div>
+        <h3>内容放量 &amp; 爆款打造</h3>
+        <div class="divider"></div>
+        <p style="line-height:2;">
+          &bull; 基于数据优化内容方向<br>
+          &bull; 产出 6-8 条优化后视频<br>
+          &bull; 重点打造 2-3 条爆款潜力视频<br>
+          &bull; 热门趋势借势内容<br>
+          &bull; Amazon品牌词监测启动
+        </p>
+        <div style="margin-top:16px; background:white; border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--ebl-green);">20万+</div>
+          <div style="font-size:12px; color:var(--gray);">目标累计播放</div>
+        </div>
+      </div>
+
+      <div class="card" style="border-left: 4px solid var(--ebl-green);">
+        <div class="tag">第3个月</div>
+        <h3>爆发增长 &amp; 转化收割</h3>
+        <div class="divider"></div>
+        <p style="line-height:2;">
+          &bull; 验证爆款模板规模化复制<br>
+          &bull; 产出 8-10 条精品视频<br>
+          &bull; 社群互动 &amp; 粉丝运营<br>
+          &bull; Amazon转化链路优化<br>
+          &bull; 完整运营报告 &amp; 续约规划
+        </p>
+        <div style="margin-top:16px; background:white; border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-size:28px; font-weight:800; color:var(--ebl-green);">50万+</div>
+          <div style="font-size:12px; color:var(--gray);">目标累计播放</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:25px; display:flex; gap:20px;">
+      <div class="guarantee-strip" style="flex:1;">
+        <div class="icon" style="font-size:36px;">&#x1F4BB;</div>
+        <div class="text">
+          <h4>Amazon 业绩联动目标</h4>
+          <p>通过TikTok内容种草，预计3个月内品牌词搜索量提升30%+，帮助Amazon listing自然排名回升，反转当前销量下滑趋势</p>
+        </div>
+      </div>
+      <div class="guarantee-strip" style="flex:1;">
+        <div class="icon" style="font-size:36px;">&#x1F4CA;</div>
+        <div class="text">
+          <h4>核心交付物</h4>
+          <p>3个月累计 20-26条 原创视频 + 每周数据报告 + 每月深度运营分析报告 + Amazon品牌词追踪报告</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= PAGE 8: KPI & GUARANTEE ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">08 / 10</span>
+  </div>
+  <div class="page-body">
+    <div class="page-title">效果承诺与 <span class="green-accent">KPI 保障</span></div>
+    <div class="page-subtitle">数据驱动，结果导向 &mdash; 我们用承诺证明实力</div>
+
+    <div class="stat-row" style="margin-top:20px;">
+      <div class="stat-item">
+        <div class="stat-value">50万+</div>
+        <div class="stat-label">3个月累计播放量承诺</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">20-26条</div>
+        <div class="stat-label">3个月累计交付视频</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">30%+</div>
+        <div class="stat-label">品牌词搜索量增幅目标</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top:10px;">
+      <div class="col">
+        <h3 style="font-size:18px; margin-bottom:16px; color:var(--ebl-dark-green);">核心 KPI</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>指标</th><th>目标</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>3个月累计播放量</td><td class="highlight">&ge; 500,000</td></tr>
+            <tr><td>单条视频平均播放</td><td class="highlight">&ge; 20,000</td></tr>
+            <tr><td>爆款视频 (10万+)</td><td class="highlight">&ge; 3 条</td></tr>
+            <tr><td>账号粉丝增长</td><td class="highlight">&ge; 2,000</td></tr>
+            <tr><td>平均互动率</td><td class="highlight">&ge; 3%</td></tr>
+            <tr><td>Amazon品牌词搜索</td><td class="highlight">显著提升</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col">
+        <h3 style="font-size:18px; margin-bottom:16px; color:var(--ebl-dark-green);">保障机制</h3>
+
+        <div class="card" style="margin-bottom:12px;">
+          <h3>播放量保底</h3>
+          <p>3个月合约期内，保证累计播放量达到50万以上。如未达成，免费延长服务至达标。</p>
+        </div>
+
+        <div class="card" style="margin-bottom:12px;">
+          <h3>透明数据汇报</h3>
+          <p>每周提供数据周报，每月提供完整运营分析报告，数据随时可查。</p>
+        </div>
+
+        <div class="card">
+          <h3>Amazon 业绩关联</h3>
+          <p>通过品牌词搜索量追踪，让您清晰看到TikTok运营对Amazon的业绩贡献，确保投入可量化。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= PAGE 9: PRICING ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">09 / 10</span>
+  </div>
+  <div class="page-body">
+    <div class="page-title">投资方案与 <span class="green-accent">报价</span></div>
+    <div class="page-subtitle">高性价比的专业代运营服务 &mdash; 远低于达人合作的成本，数倍于达人合作的回报</div>
+
+    <div class="pricing-box" style="margin-top:20px;">
+      <div style="text-align:center; min-width:280px;">
+        <div style="font-size:14px; opacity:0.6; margin-bottom:8px;">EBL 官方账号代运营</div>
+        <div class="price">
+          <span class="unit">RMB</span> 20,000
+          <div class="period">/ 3个月合约</div>
+        </div>
+        <div style="margin-top:12px; font-size:14px; opacity:0.7;">约 &yen;6,667/月 &bull; 约 &yen;770/条视频</div>
+      </div>
+      <div style="border-left:1px solid rgba(255,255,255,0.2); padding-left:40px;">
+        <ul>
+          <li>3个月合约期，专属运营团队全程服务</li>
+          <li>每月 6-8 条原创高品质短视频（共 20-26 条）</li>
+          <li>账号定位 &bull; 品牌视觉 &bull; 发布运营 全托管</li>
+          <li>3个月累计 <strong>50万+ 播放量</strong> 保底承诺</li>
+          <li>每周数据报告 + 每月深度运营分析</li>
+          <li>Amazon 品牌词搜索量追踪与优化</li>
+          <li>专业英语母语级配音与字幕处理</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:24px; display:flex; gap:20px;">
+      <div class="card white" style="flex:1; text-align:center;">
+        <h3>vs 达人合作</h3>
+        <p>头部达人单条视频$500-2000+，6条即超过本方案全部费用。我们提供20+条专业内容，成本仅为达人方案的 <strong>1/5</strong></p>
+      </div>
+      <div class="card white" style="flex:1; text-align:center;">
+        <h3>vs 广告投放</h3>
+        <p>TikTok广告CPM约$10-15，50万曝光需$5,000-7,500投放费。我们用自然流量实现同等曝光，还产出了<strong>长期可用的品牌内容资产</strong></p>
+      </div>
+      <div class="card white" style="flex:1; text-align:center;">
+        <h3>投资回报</h3>
+        <p>以EBL平均客单价$100估算，TikTok每带来100单Amazon转化即收回全部投资，<strong>ROI远超传统营销渠道</strong></p>
+      </div>
+    </div>
+
+    <div class="guarantee-strip" style="margin-top:20px;">
+      <div class="icon" style="font-size:36px;">&#x1F3C6;</div>
+      <div class="text">
+        <h4>首月合作特别承诺</h4>
+        <p>签约后7个工作日内产出首批3条视频 &bull; 不满意可全额退款 &bull; 后续按月交付，每月验收</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= PAGE 10: NEXT STEPS ========= -->
+<div class="page">
+  <div class="page-header">
+    <span class="logo-text">QuickNow &times; EBL</span>
+    <span class="page-num">10 / 10</span>
+  </div>
+  <div class="page-body" style="justify-content:center; align-items:center; text-align:center;">
+    <div style="max-width:800px;">
+      <div style="font-size:14px; letter-spacing:4px; color:var(--ebl-green); margin-bottom:20px;">NEXT STEPS</div>
+      <div class="page-title" style="font-size:40px; margin-bottom:12px;">下一步 <span class="green-accent">合作启动</span></div>
+      <div class="divider" style="margin:12px auto 30px auto;"></div>
+
+      <div style="display:flex; gap:24px; margin-bottom:40px;">
+        <div class="card" style="flex:1; text-align:center;">
+          <div style="font-size:36px; font-weight:900; color:var(--ebl-green);">01</div>
+          <h3>确认合作意向</h3>
+          <p>双方确认方案细节<br>签署合作协议</p>
+        </div>
+        <div class="card" style="flex:1; text-align:center;">
+          <div style="font-size:36px; font-weight:900; color:var(--ebl-green);">02</div>
+          <h3>产品交接</h3>
+          <p>EBL提供产品样品<br>品牌素材与授权</p>
+        </div>
+        <div class="card" style="flex:1; text-align:center;">
+          <div style="font-size:36px; font-weight:900; color:var(--ebl-green);">03</div>
+          <h3>启动运营</h3>
+          <p>7日内交付首批视频<br>正式进入运营节奏</p>
+        </div>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #003D1A, var(--ebl-green)); border-radius:20px; padding:36px; color:white;">
+        <div style="font-size:22px; font-weight:700; margin-bottom:16px;">用内容点燃品牌，让 EBL 在全球市场发光</div>
+        <div style="font-size:15px; opacity:0.85; margin-bottom:24px;">
+          我们不只是拍视频，我们懂内容，也懂"什么能火"
+        </div>
+        <div style="display:flex; justify-content:center; gap:60px; font-size:14px; opacity:0.8;">
+          <div>
+            <div style="font-weight:600; margin-bottom:4px;">联系邮箱</div>
+            info@genuinereserve.us
+          </div>
+          <div>
+            <div style="font-weight:600; margin-bottom:4px;">业务负责人</div>
+            Ciel
+          </div>
+          <div>
+            <div style="font-weight:600; margin-bottom:4px;">联系电话</div>
+            17766705999
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px; font-size:12px; color:var(--gray);">
+        QuickNow 快脑工作室 &bull; Genuine Reserve &bull; 深圳 &amp; 加州 &bull; 本方案有效期30天
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
