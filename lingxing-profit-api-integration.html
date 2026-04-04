@@ -267,7 +267,7 @@ pre code {
   background: none;
   padding: 0;
   font-size: 13px;
-  color: var(--text2);
+  line-height: 1.6;
 }
 footer {
   text-align: center;
@@ -288,195 +288,233 @@ footer {
 </head>
 <body>
 <div class="container">
-
 <a class="back-link" href="index.html">&larr; 返回目录</a>
 
 <header>
   <div class="icon">📊</div>
   <h1>领星利润报表API集成 + 各平台结算看板新增</h1>
-  <div class="subtitle">Amazon 真实 P&amp;L 接入与多平台结算 Tab 上线</div>
+  <div class="subtitle">通过领星 OpenAPI 获取 Amazon 真实损益，构建多平台结算看板</div>
   <div class="date">2026-04-04</div>
 </header>
 
 <nav class="toc">
   <h2>目录</h2>
-  <a href="#background"><span class="dot" style="background:var(--purple)"></span>背景</a>
-  <a href="#operations"><span class="dot" style="background:var(--accent)"></span>关键操作</a>
-  <a href="#fields"><span class="dot" style="background:var(--cyan)"></span>关键字段名差异</a>
-  <a href="#result"><span class="dot" style="background:var(--green)"></span>结果</a>
-  <a href="#remaining"><span class="dot" style="background:var(--coral)"></span>遗留问题</a>
-  <a href="#files"><span class="dot" style="background:var(--text3)"></span>相关文件</a>
+  <a href="#background"><span class="dot" style="background:var(--purple)"></span>背景与目标</a>
+  <a href="#sign-v2"><span class="dot" style="background:var(--green)"></span>领星 API V2 签名与调用</a>
+  <a href="#profit-pull"><span class="dot" style="background:var(--green)"></span>利润报表拉取</a>
+  <a href="#field-mapping"><span class="dot" style="background:var(--amber)"></span>关键字段映射（踩坑）</a>
+  <a href="#multi-platform"><span class="dot" style="background:var(--coral)"></span>多平台 API 探测</a>
+  <a href="#settlement-tab"><span class="dot" style="background:var(--green)"></span>新增「各平台结算」Tab</a>
+  <a href="#ads-api"><span class="dot" style="background:var(--green)"></span>广告效率表改用 API 数据</a>
+  <a href="#result"><span class="dot" style="background:var(--amber)"></span>结果与遗留问题</a>
 </nav>
 
 <section id="background">
-  <h2>背景 <span class="badge status-info">CONTEXT</span></h2>
-  <p style="color:var(--text2);font-size:14px;line-height:1.7;">JHFinance 财务看板已接入领星订单数据，但缺少平台级实际结算损益（含平台佣金、FBA费用、广告费、COGS等扣项）。需要通过领星 OpenAPI 利润报表端点获取 Amazon 每月真实毛利，同时调查其他平台（TikTok / Walmart / ML / Temu）是否有等价接口。</p>
+  <h2><span class="dot" style="background:var(--purple)"></span> 背景与目标 <span class="badge status-info">CONTEXT</span></h2>
+  <p style="color:var(--text2); font-size:14px; line-height:1.7;">
+    财务看板已接入领星订单数据，但缺少平台级实际结算损益（含平台佣金、FBA 费用、广告费、COGS 等扣项）。需要通过领星 OpenAPI 利润报表端点获取 Amazon 每月真实毛利，同时调查其他平台（TikTok / Walmart / ML / Temu）是否有等价接口。
+  </p>
 </section>
 
-<section id="operations">
-  <h2>关键操作 <span class="badge status-done">6 STEPS</span></h2>
-  <div class="step-list">
-
-    <div class="step open">
-      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
-        <h3>领星 API V2 签名与调用</h3>
-        <span class="arrow">&#9654;</span>
-      </div>
-      <div class="step-body">
-        <p>新增 <code>_make_sign_v2</code>（布尔值序列化为小写字符串，数组展开为 compact JSON）和 <code>_call_v2</code>（请求头增加 <code>X-API-VERSION: 2</code>）。</p>
-      </div>
+<section id="sign-v2">
+  <h2><span class="dot" style="background:var(--green)"></span> 领星 API V2 签名与调用 <span class="badge status-done">DONE</span></h2>
+  <p style="color:var(--text2); font-size:14px; line-height:1.7; margin-bottom:12px;">
+    新增 V2 版本签名方法与请求逻辑：
+  </p>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="label">签名方法</div>
+      <div class="value"><code>_make_sign_v2</code></div>
+      <div class="detail">布尔值序列化为小写字符串，数组展开为 compact JSON</div>
     </div>
+    <div class="info-card">
+      <div class="label">请求方法</div>
+      <div class="value"><code>_call_v2</code></div>
+      <div class="detail">请求头增加 X-API-VERSION: 2</div>
+    </div>
+  </div>
+</section>
 
-    <div class="step open">
-      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
-        <h3>利润报表拉取</h3>
-        <span class="arrow">&#9654;</span>
-      </div>
-      <div class="step-body">
-<pre><code>def get_profit_report(self, year: int, month: int) -&gt; list: ...       # 单月
+<section id="profit-pull">
+  <h2><span class="dot" style="background:var(--green)"></span> 利润报表拉取 <span class="badge status-done">DONE</span></h2>
+  <p style="color:var(--text2); font-size:14px; line-height:1.7; margin-bottom:12px;">
+    封装单月查询与多月合并两个方法：
+  </p>
+  <pre><code>def get_profit_report(self, year: int, month: int) -&gt; list: ...       # 单月
 def get_profit_report_all_months(self, months: list) -&gt; dict: ...    # 多月合并</code></pre>
-        <p>CLI 独立测试：</p>
-<pre><code>python3 analysis/lingxing_api.py profit</code></pre>
-      </div>
-    </div>
+  <p style="color:var(--text2); font-size:14px; line-height:1.7; margin-top:12px;">CLI 独立测试：</p>
+  <pre><code>python3 analysis/api_client.py profit</code></pre>
+</section>
 
-    <div class="step open">
-      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
-        <h3>关键字段名（与文档不一致）</h3>
-        <span class="arrow">&#9654;</span>
-      </div>
-      <div class="step-body">
-        <div class="highlight">API 返回字段名与官方文档存在差异，以实际返回为准。</div>
-        <table class="flow-table">
-          <thead><tr><th>说明</th><th>文档字段</th><th>实际字段</th></tr></thead>
-          <tbody>
-            <tr><td>日期</td><td><code>dateRange</code></td><td><code>date</code></td></tr>
-            <tr><td>销量</td><td><code>totalOrderQuantity</code></td><td><code>totalSalesQuantity</code></td></tr>
-            <tr><td>净利润</td><td><code>netProfit</code></td><td>无此字段</td></tr>
-          </tbody>
-        </table>
-        <p>毛利计算公式：营收 − COGS − 头程 − 佣金 − FBA − 仓储 − 广告</p>
-      </div>
-    </div>
-
-    <div class="step open">
-      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
-        <h3>多平台利润报表 API 探测</h3>
-        <span class="arrow">&#9654;</span>
-      </div>
-      <div class="step-body">
-        <p>测试 30+ 路径变体，TikTok / Walmart / ML / Temu 全部返回 404。</p>
-        <div class="highlight">决策：改用订单数据聚合（简易毛利估算）。</div>
-      </div>
-    </div>
-
-    <div class="step open">
-      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
-        <h3>新增「各平台结算」Tab</h3>
-        <span class="arrow">&#9654;</span>
-      </div>
-      <div class="step-body">
-        <p>位于「前7日」右侧，月份子 tab 切换，平台顺序 TikTok → Amazon → Walmart → ML → Temu。</p>
-        <table class="flow-table">
-          <thead><tr><th>平台</th><th>数据来源</th><th>备注</th></tr></thead>
-          <tbody>
-            <tr><td>Amazon</td><td>利润报表 API</td><td>真实 P&amp;L</td></tr>
-            <tr><td>TikTok</td><td>订单聚合</td><td>毛利估算</td></tr>
-            <tr><td>Walmart</td><td>订单聚合</td><td>毛利估算</td></tr>
-            <tr><td>ML</td><td>订单聚合（50%计入）</td><td>毛利估算</td></tr>
-            <tr><td>Temu</td><td>订单聚合</td><td>毛利估算</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="step open">
-      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
-        <h3>广告效率表改用 API 数据</h3>
-        <span class="arrow">&#9654;</span>
-      </div>
-      <div class="step-body">
-        <p>ACOS / ROAS 改为从 <code>totalAdsCost</code> / <code>totalAdsSales</code> 计算，标注 "API" badge；运营看板移除重复的 Amazon 利润卡片。</p>
-      </div>
-    </div>
-
+<section id="field-mapping">
+  <h2><span class="dot" style="background:var(--amber)"></span> 关键字段映射（踩坑） <span class="badge status-warn">GOTCHA</span></h2>
+  <div class="alert alert-warn">
+    <span class="icon">&#9888;&#65039;</span>
+    <div>API 实际返回的字段名与官方文档存在差异，需以实际响应为准。</div>
+  </div>
+  <table class="flow-table">
+    <thead>
+      <tr>
+        <th>含义</th>
+        <th>文档字段</th>
+        <th>实际字段</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>日期</td>
+        <td><code>dateRange</code></td>
+        <td><code>date</code></td>
+      </tr>
+      <tr>
+        <td>销量</td>
+        <td><code>totalOrderQuantity</code></td>
+        <td><code>totalSalesQuantity</code></td>
+      </tr>
+      <tr>
+        <td>净利润</td>
+        <td><code>netProfit</code></td>
+        <td>无此字段，需手动计算</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="alert alert-warn">
+    <span class="icon">&#128161;</span>
+    <div><strong>毛利计算公式：</strong>营收 - COGS - 头程 - 佣金 - FBA - 仓储 - 广告</div>
   </div>
 </section>
 
-<section id="fields">
-  <h2>关键字段名差异 <span class="badge status-warn">注意</span></h2>
-  <div class="alert alert-warn">
-    <span class="icon">⚠️</span>
-    <div>API 实际返回的字段名与领星官方文档不一致，开发时应以实际返回数据为准，避免直接照搬文档字段名。<code>netProfit</code> 字段不存在，毛利需手动计算。</div>
+<section id="multi-platform">
+  <h2><span class="dot" style="background:var(--coral)"></span> 多平台利润报表 API 探测 <span class="badge status-issue">404</span></h2>
+  <p style="color:var(--text2); font-size:14px; line-height:1.7; margin-bottom:12px;">
+    测试 30+ 路径变体，TikTok / Walmart / ML / Temu 利润报表端点全部返回 404。
+  </p>
+  <div class="alert alert-danger">
+    <span class="icon">&#10060;</span>
+    <div>结论：领星 OpenAPI 目前仅对 Amazon 开放利润报表接口，其他平台尚未支持。<br><strong>决策：</strong>其他平台改用订单数据聚合方式进行简易毛利估算。</div>
   </div>
+</section>
+
+<section id="settlement-tab">
+  <h2><span class="dot" style="background:var(--green)"></span> 新增「各平台结算」Tab <span class="badge status-done">DONE</span></h2>
+  <p style="color:var(--text2); font-size:14px; line-height:1.7; margin-bottom:12px;">
+    看板新增结算 Tab，位于「前7日」右侧，支持按月切换：
+  </p>
+  <table class="flow-table">
+    <thead>
+      <tr>
+        <th>平台</th>
+        <th>数据来源</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="step-num">Amazon</td>
+        <td>利润报表 API（真实 P&amp;L）</td>
+        <td>含佣金、FBA、广告等全部扣项</td>
+      </tr>
+      <tr>
+        <td class="step-num">TikTok</td>
+        <td>订单数据聚合（估算）</td>
+        <td>缺少平台扣费明细</td>
+      </tr>
+      <tr>
+        <td class="step-num">Walmart</td>
+        <td>订单数据聚合（估算）</td>
+        <td>无 COGS，需后台录入</td>
+      </tr>
+      <tr>
+        <td class="step-num">ML</td>
+        <td>订单数据聚合（估算）</td>
+        <td>按 50% 计入，无 COGS</td>
+      </tr>
+      <tr>
+        <td class="step-num">Temu</td>
+        <td>订单数据聚合（估算）</td>
+        <td>缺少平台扣费明细</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="color:var(--text2); font-size:14px; line-height:1.7;">
+    平台顺序：TikTok &rarr; Amazon &rarr; Walmart &rarr; ML &rarr; Temu
+  </p>
+</section>
+
+<section id="ads-api">
+  <h2><span class="dot" style="background:var(--green)"></span> 广告效率表改用 API 数据 <span class="badge status-done">DONE</span></h2>
+  <p style="color:var(--text2); font-size:14px; line-height:1.7; margin-bottom:12px;">
+    ACOS / ROAS 改为从 <code>totalAdsCost</code> / <code>totalAdsSales</code> 计算，页面标注 "API" badge 标识数据来源。同时运营看板移除重复的 Amazon 利润卡片，避免数据冗余。
+  </p>
 </section>
 
 <section id="result">
-  <h2>结果 <span class="badge status-warn">部分完成</span></h2>
+  <h2><span class="dot" style="background:var(--amber)"></span> 结果与遗留问题 <span class="badge status-warn">PARTIAL</span></h2>
   <div class="alert alert-success">
-    <span class="icon">✅</span>
-    <div>Amazon 利润报表 API 集成成功；各平台结算 tab 已上线（Amazon 真实 P&amp;L，其他平台估算）。</div>
+    <span class="icon">&#9989;</span>
+    <div><strong>已完成：</strong>Amazon 利润报表 API 集成成功；各平台结算 Tab 已上线（Amazon 真实 P&amp;L + 其他平台估算）。</div>
   </div>
+
   <div class="info-grid">
     <div class="info-card">
-      <div class="label">2026-03 全平台收入</div>
-      <div class="value">¥99,661</div>
-      <div class="detail">695 单</div>
+      <div class="label">全平台月度收入</div>
+      <div class="value">[金额]</div>
+      <div class="detail">含全部 5 个平台</div>
     </div>
     <div class="info-card">
-      <div class="label">全平台毛利</div>
-      <div class="value">¥70,333</div>
-      <div class="detail">毛利率 70.6%</div>
+      <div class="label">全平台月度毛利</div>
+      <div class="value">[金额]（[比率]）</div>
+      <div class="detail">毛利率</div>
+    </div>
+    <div class="info-card">
+      <div class="label">月度订单量</div>
+      <div class="value">[数量] 单</div>
     </div>
     <div class="info-card">
       <div class="label">Amazon 毛利率</div>
-      <div class="value">47.2%</div>
-      <div class="detail">利润报表 API 真实数据</div>
+      <div class="value">[比率]</div>
+      <div class="detail">基于利润报表 API 真实数据</div>
     </div>
   </div>
-</section>
 
-<section id="remaining">
-  <h2>遗留问题 <span class="badge status-issue">5 ITEMS</span></h2>
+  <h3 style="font-size:16px; font-weight:500; margin:24px 0 12px; color:var(--text);">遗留问题</h3>
   <ul class="tips">
-    <li><span class="num">1</span><span>TikTok / Walmart / ML / Temu 利润报表 API 尚未在领星 OpenAPI 开放</span></li>
-    <li><span class="num">2</span><span>Walmart / ML 无 COGS 数据，需在领星后台录入</span></li>
-    <li><span class="num">3</span><span>Priority 2：广告报表 API（<code>/pb/openapi/newad/spCampaignReports</code>）日粒度数据</span></li>
-    <li><span class="num">4</span><span>Priority 3：自动导入会计 Excel（<code>raw-data/3月资产表格0402.xlsx</code>）</span></li>
-    <li><span class="num">5</span><span>Priority 4：对账视图（领星结算 vs 财务确认数）</span></li>
+    <li>
+      <span class="num">1</span>
+      <span>TikTok / Walmart / ML / Temu 利润报表 API 尚未在领星 OpenAPI 开放，需持续关注更新</span>
+    </li>
+    <li>
+      <span class="num">2</span>
+      <span>Walmart / ML 无 COGS 数据，需在领星后台手动录入</span>
+    </li>
+    <li>
+      <span class="num">3</span>
+      <span>Priority 2：广告报表 API 日粒度数据接入</span>
+    </li>
+    <li>
+      <span class="num">4</span>
+      <span>Priority 3：自动导入会计 Excel 数据</span>
+    </li>
+    <li>
+      <span class="num">5</span>
+      <span>Priority 4：对账视图（领星结算 vs 财务确认数）</span>
+    </li>
   </ul>
 </section>
 
-<section id="files">
-  <h2>相关文件 <span class="badge status-info">FILES</span></h2>
-  <div class="info-grid">
-    <div class="info-card">
-      <div class="label">API 封装</div>
-      <div class="value"><code>analysis/lingxing_api.py</code></div>
-    </div>
-    <div class="info-card">
-      <div class="label">报表生成</div>
-      <div class="value"><code>analysis/generate_html_report.py</code></div>
-    </div>
-    <div class="info-card">
-      <div class="label">成本配置</div>
-      <div class="value"><code>analysis/costs_config.json</code></div>
-    </div>
-    <div class="info-card">
-      <div class="label">每日更新脚本</div>
-      <div class="value"><code>analysis/daily_update.sh</code></div>
-    </div>
-    <div class="info-card">
-      <div class="label">数据缓存</div>
-      <div class="value"><code>analysis/.lx_data_cache.json</code></div>
-    </div>
-  </div>
+<section>
+  <h2><span class="dot" style="background:var(--purple)"></span> 相关文件 <span class="badge status-info">REF</span></h2>
+  <ul class="tips">
+    <li><span class="num">1</span><span><code>analysis/api_client.py</code> — API 签名、调用与利润报表拉取</span></li>
+    <li><span class="num">2</span><span><code>analysis/report_generator.py</code> — HTML 看板生成</span></li>
+    <li><span class="num">3</span><span><code>analysis/costs_config.json</code> — 成本配置</span></li>
+    <li><span class="num">4</span><span><code>analysis/daily_update.sh</code> — 每日更新脚本</span></li>
+  </ul>
 </section>
 
 <footer>
-  Howard · Powered by Claude
+  Howard &middot; Powered by Claude
 </footer>
-
 </div>
 
 <script>
