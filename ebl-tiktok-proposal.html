@@ -333,6 +333,93 @@
     .page { margin: 0; box-shadow: none; page-break-after: always; }
     body { background: white; }
   }
+
+  /* ========= SESSION LOG STYLES ========= */
+  nav.toc {
+    width: 1280px;
+    margin: 30px auto 0 auto;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 28px 40px;
+  }
+  nav.toc h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ebl-dark-green);
+    margin-bottom: 14px;
+  }
+  nav.toc ul {
+    list-style: none;
+    padding: 0;
+  }
+  nav.toc ul li {
+    margin-bottom: 6px;
+  }
+  nav.toc ul li a {
+    color: var(--ebl-green);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  nav.toc ul li a:hover {
+    text-decoration: underline;
+  }
+
+  .session-section {
+    width: 1280px;
+    margin: 20px auto;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    padding: 40px 60px;
+  }
+  .session-section h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  .session-section h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ebl-dark-green);
+    margin-top: 24px;
+    margin-bottom: 10px;
+  }
+  .session-section p,
+  .session-section li {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--gray-dark);
+  }
+  .session-section ul,
+  .session-section ol {
+    padding-left: 24px;
+    margin-bottom: 12px;
+  }
+  .session-section code {
+    background: #f1f5f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--ebl-dark-green);
+  }
+  .session-section pre {
+    background: var(--dark);
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 10px 0 16px 0;
+  }
+  .session-section pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
 </style>
 <style>
 #pw-overlay{position:fixed;inset:0;z-index:9999;background:#0a0c14;display:flex;align-items:center;justify-content:center}
@@ -997,6 +1084,86 @@
     </div>
   </div>
 </div>
+
+<!-- ========= SESSION LOG ========= -->
+<nav class="toc">
+  <h2>Session 记录目录</h2>
+  <ul>
+    <li><a href="#session-2026-04-04">2026-04-04 — 为 EBL 品牌制作 TikTok 代运营方案并导出 PDF</a></li>
+  </ul>
+</nav>
+
+<section class="session-section" id="session-2026-04-04">
+  <h2>2026-04-04 — 为 EBL 品牌制作 TikTok 代运营方案并导出 PDF</h2>
+
+  <h3>背景</h3>
+  <p>QuickNow 团队需要向乐能创新（EBL）品牌客户提交 TikTok 官方账号代运营商业提案。EBL 目前主要渠道为 Amazon，希望借助 TikTok 内容营销提升品牌曝光并反哺 Amazon 转化。需要制作一份专业的 10 页横版 HTML 方案并导出为 PDF 交付。</p>
+
+  <h3>关键操作</h3>
+  <ol>
+    <li>
+      <strong>读取品牌与数据参考文件</strong>
+      <ul>
+        <li><code>leneng.md</code>：EBL 品牌基础信息</li>
+        <li><code>20260403_B0G5YVZWRF_历史月日趋势数据.xlsx</code>：Amazon 销售历史数据</li>
+        <li>QuickNow 介绍 PDF</li>
+      </ul>
+    </li>
+    <li>
+      <strong>整理原始数据文件</strong>
+      <pre><code>mkdir rawdata
+cp leneng.md rawdata/
+cp 20260403_B0G5YVZWRF_历史月日趋势数据.xlsx rawdata/</code></pre>
+    </li>
+    <li>
+      <strong>创建 10 页横版 HTML 方案（绿色主题配色），结构如下：</strong>
+      <ul>
+        <li>封面</li>
+        <li>EBL 现状分析（Amazon 销售数据可视化）</li>
+        <li>为什么选择 TikTok</li>
+        <li>QuickNow 服务介绍</li>
+        <li>服务内容详情</li>
+        <li>内容策略</li>
+        <li>3 个月里程碑规划</li>
+        <li>KPI 保障承诺</li>
+        <li>报价页</li>
+        <li>合作启动流程</li>
+      </ul>
+    </li>
+    <li>
+      <strong>安装 Puppeteer 及 Chrome 系统依赖</strong>
+      <pre><code>npm install puppeteer
+sudo apt-get install -y libnspr4 libnss3 # 及其他 Chrome 依赖库</code></pre>
+    </li>
+    <li>
+      <strong>编写转换脚本并生成 PDF</strong>
+      <pre><code>node convert_to_pdf.js
+# 输出：EBL_TikTok代运营方案_QuickNow.pdf（2.1MB，10页）</code></pre>
+    </li>
+  </ol>
+
+  <h3>结果</h3>
+  <p>成功。最终交付物为 <code>EBL_TikTok代运营方案_QuickNow.pdf</code>，共 10 页，2.1MB。</p>
+  <p>关键方案内容：</p>
+  <ul>
+    <li>报价：RMB 20,000 / 3 个月合约</li>
+    <li>播放量承诺：3 个月累计 50 万+ 播放保底</li>
+    <li>内容产量：每月 6-8 条原创视频</li>
+    <li>核心卖点：Amazon 品牌词搜索量提升 &rarr; Amazon 转化率联动增长</li>
+  </ul>
+
+  <h3>遗留问题</h3>
+  <p>无</p>
+
+  <h3>相关文件</h3>
+  <ul>
+    <li><code>/home/[USER]/wsl-workspace/bd-leneng/rawdata/leneng.md</code></li>
+    <li><code>/home/[USER]/wsl-workspace/bd-leneng/rawdata/20260403_B0G5YVZWRF_历史月日趋势数据.xlsx</code></li>
+    <li><code>/home/[USER]/wsl-workspace/bd-leneng/ebl_tiktok_proposal.html</code></li>
+    <li><code>/home/[USER]/wsl-workspace/bd-leneng/convert_to_pdf.js</code></li>
+    <li><code>/home/[USER]/wsl-workspace/bd-leneng/EBL_TikTok代运营方案_QuickNow.pdf</code></li>
+  </ul>
+</section>
 
 </body>
 </html>
