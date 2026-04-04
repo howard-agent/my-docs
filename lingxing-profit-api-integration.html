@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>领星利润报表API集成 + 各平台结算看板新增</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --card: #151d2e;
+  --border: #2a3650;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --accent: #f59e0b;
+  --accent2: #d97706;
+  --green: #34d399;
+  --green-bg: rgba(52, 211, 153, 0.08);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251, 191, 36, 0.08);
+  --coral: #fb7185;
+  --coral-bg: rgba(251, 113, 133, 0.08);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167, 139, 250, 0.08);
+  --cyan: #22d3ee;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 300;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text3);
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 32px;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--accent); }
+header {
+  text-align: center;
+  padding: 40px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+header .icon { font-size: 48px; margin-bottom: 12px; }
+header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent), var(--coral));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+header .subtitle { color: var(--text3); font-size: 14px; }
+header .date { color: var(--text3); font-size: 13px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+nav.toc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 40px;
+}
+nav.toc h2 { font-size: 13px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+nav.toc a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+  border-bottom: 1px solid rgba(42, 54, 80, 0.5);
+}
+nav.toc a:last-child { border-bottom: none; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+section { margin-bottom: 48px; }
+section h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+section h2 .badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+.status-done { background: var(--green-bg); color: var(--green); }
+.status-warn { background: var(--amber-bg); color: var(--amber); }
+.status-issue { background: var(--coral-bg); color: var(--coral); }
+.status-info { background: var(--purple-bg); color: var(--purple); }
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 16px 0; }
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  transition: border-color 0.2s;
+}
+.info-card:hover { border-color: var(--accent); }
+.info-card .label { font-size: 12px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.info-card .value { font-size: 15px; font-weight: 400; }
+.info-card .detail { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+.step-list { counter-reset: step; }
+.step {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.step:hover { border-color: rgba(245, 158, 11, 0.3); }
+.step-header {
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  user-select: none;
+}
+.step-header::before {
+  counter-increment: step;
+  content: counter(step);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.step-header h3 { font-size: 15px; font-weight: 500; flex: 1; }
+.step-header .arrow { color: var(--text3); transition: transform 0.2s; font-size: 14px; }
+.step.open .step-header .arrow { transform: rotate(90deg); }
+.step-body { display: none; padding: 0 20px 20px 62px; }
+.step.open .step-body { display: block; }
+.step-body p { color: var(--text2); font-size: 14px; margin-bottom: 10px; line-height: 1.7; }
+.step-body .highlight {
+  background: var(--amber-bg);
+  border-left: 3px solid var(--amber);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text2);
+}
+.flow-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.flow-table thead th {
+  background: var(--bg3);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+}
+.flow-table thead th:first-child { border-radius: 8px 0 0 0; }
+.flow-table thead th:last-child { border-radius: 0 8px 0 0; }
+.flow-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+}
+.flow-table tbody tr:last-child td { border-bottom: none; }
+.flow-table tbody tr:hover td { background: rgba(245, 158, 11, 0.03); }
+.flow-table .step-num {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  font-weight: 500;
+}
+.alert {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 16px 0;
+  align-items: flex-start;
+}
+.alert .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alert-success { background: var(--green-bg); border: 1px solid rgba(52, 211, 153, 0.2); }
+.alert-warn { background: var(--amber-bg); border: 1px solid rgba(251, 191, 36, 0.2); }
+.alert-danger { background: var(--coral-bg); border: 1px solid rgba(251, 113, 133, 0.2); }
+.kv { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+.kv .k { color: var(--text3); min-width: 100px; flex-shrink: 0; }
+.kv .v { color: var(--text2); }
+.tips { list-style: none; padding: 0; }
+.tips li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tips li:last-child { border-bottom: none; }
+.tips li .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--bg3);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--cyan);
+}
+pre {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  color: var(--text2);
+}
+footer {
+  text-align: center;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+  color: var(--text3);
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .container { padding: 20px 16px 60px; }
+  header h1 { font-size: 20px; }
+  .info-grid { grid-template-columns: 1fr; }
+  .flow-table { font-size: 12px; }
+  .flow-table thead th, .flow-table tbody td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">&larr; 返回目录</a>
+
+<header>
+  <div class="icon">📊</div>
+  <h1>领星利润报表API集成 + 各平台结算看板新增</h1>
+  <div class="subtitle">Amazon 真实 P&amp;L 接入与多平台结算 Tab 上线</div>
+  <div class="date">2026-04-04</div>
+</header>
+
+<nav class="toc">
+  <h2>目录</h2>
+  <a href="#background"><span class="dot" style="background:var(--purple)"></span>背景</a>
+  <a href="#operations"><span class="dot" style="background:var(--accent)"></span>关键操作</a>
+  <a href="#fields"><span class="dot" style="background:var(--cyan)"></span>关键字段名差异</a>
+  <a href="#result"><span class="dot" style="background:var(--green)"></span>结果</a>
+  <a href="#remaining"><span class="dot" style="background:var(--coral)"></span>遗留问题</a>
+  <a href="#files"><span class="dot" style="background:var(--text3)"></span>相关文件</a>
+</nav>
+
+<section id="background">
+  <h2>背景 <span class="badge status-info">CONTEXT</span></h2>
+  <p style="color:var(--text2);font-size:14px;line-height:1.7;">JHFinance 财务看板已接入领星订单数据，但缺少平台级实际结算损益（含平台佣金、FBA费用、广告费、COGS等扣项）。需要通过领星 OpenAPI 利润报表端点获取 Amazon 每月真实毛利，同时调查其他平台（TikTok / Walmart / ML / Temu）是否有等价接口。</p>
+</section>
+
+<section id="operations">
+  <h2>关键操作 <span class="badge status-done">6 STEPS</span></h2>
+  <div class="step-list">
+
+    <div class="step open">
+      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>领星 API V2 签名与调用</h3>
+        <span class="arrow">&#9654;</span>
+      </div>
+      <div class="step-body">
+        <p>新增 <code>_make_sign_v2</code>（布尔值序列化为小写字符串，数组展开为 compact JSON）和 <code>_call_v2</code>（请求头增加 <code>X-API-VERSION: 2</code>）。</p>
+      </div>
+    </div>
+
+    <div class="step open">
+      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>利润报表拉取</h3>
+        <span class="arrow">&#9654;</span>
+      </div>
+      <div class="step-body">
+<pre><code>def get_profit_report(self, year: int, month: int) -&gt; list: ...       # 单月
+def get_profit_report_all_months(self, months: list) -&gt; dict: ...    # 多月合并</code></pre>
+        <p>CLI 独立测试：</p>
+<pre><code>python3 analysis/lingxing_api.py profit</code></pre>
+      </div>
+    </div>
+
+    <div class="step open">
+      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>关键字段名（与文档不一致）</h3>
+        <span class="arrow">&#9654;</span>
+      </div>
+      <div class="step-body">
+        <div class="highlight">API 返回字段名与官方文档存在差异，以实际返回为准。</div>
+        <table class="flow-table">
+          <thead><tr><th>说明</th><th>文档字段</th><th>实际字段</th></tr></thead>
+          <tbody>
+            <tr><td>日期</td><td><code>dateRange</code></td><td><code>date</code></td></tr>
+            <tr><td>销量</td><td><code>totalOrderQuantity</code></td><td><code>totalSalesQuantity</code></td></tr>
+            <tr><td>净利润</td><td><code>netProfit</code></td><td>无此字段</td></tr>
+          </tbody>
+        </table>
+        <p>毛利计算公式：营收 − COGS − 头程 − 佣金 − FBA − 仓储 − 广告</p>
+      </div>
+    </div>
+
+    <div class="step open">
+      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>多平台利润报表 API 探测</h3>
+        <span class="arrow">&#9654;</span>
+      </div>
+      <div class="step-body">
+        <p>测试 30+ 路径变体，TikTok / Walmart / ML / Temu 全部返回 404。</p>
+        <div class="highlight">决策：改用订单数据聚合（简易毛利估算）。</div>
+      </div>
+    </div>
+
+    <div class="step open">
+      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>新增「各平台结算」Tab</h3>
+        <span class="arrow">&#9654;</span>
+      </div>
+      <div class="step-body">
+        <p>位于「前7日」右侧，月份子 tab 切换，平台顺序 TikTok → Amazon → Walmart → ML → Temu。</p>
+        <table class="flow-table">
+          <thead><tr><th>平台</th><th>数据来源</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td>Amazon</td><td>利润报表 API</td><td>真实 P&amp;L</td></tr>
+            <tr><td>TikTok</td><td>订单聚合</td><td>毛利估算</td></tr>
+            <tr><td>Walmart</td><td>订单聚合</td><td>毛利估算</td></tr>
+            <tr><td>ML</td><td>订单聚合（50%计入）</td><td>毛利估算</td></tr>
+            <tr><td>Temu</td><td>订单聚合</td><td>毛利估算</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="step open">
+      <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>广告效率表改用 API 数据</h3>
+        <span class="arrow">&#9654;</span>
+      </div>
+      <div class="step-body">
+        <p>ACOS / ROAS 改为从 <code>totalAdsCost</code> / <code>totalAdsSales</code> 计算，标注 "API" badge；运营看板移除重复的 Amazon 利润卡片。</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="fields">
+  <h2>关键字段名差异 <span class="badge status-warn">注意</span></h2>
+  <div class="alert alert-warn">
+    <span class="icon">⚠️</span>
+    <div>API 实际返回的字段名与领星官方文档不一致，开发时应以实际返回数据为准，避免直接照搬文档字段名。<code>netProfit</code> 字段不存在，毛利需手动计算。</div>
+  </div>
+</section>
+
+<section id="result">
+  <h2>结果 <span class="badge status-warn">部分完成</span></h2>
+  <div class="alert alert-success">
+    <span class="icon">✅</span>
+    <div>Amazon 利润报表 API 集成成功；各平台结算 tab 已上线（Amazon 真实 P&amp;L，其他平台估算）。</div>
+  </div>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="label">2026-03 全平台收入</div>
+      <div class="value">¥99,661</div>
+      <div class="detail">695 单</div>
+    </div>
+    <div class="info-card">
+      <div class="label">全平台毛利</div>
+      <div class="value">¥70,333</div>
+      <div class="detail">毛利率 70.6%</div>
+    </div>
+    <div class="info-card">
+      <div class="label">Amazon 毛利率</div>
+      <div class="value">47.2%</div>
+      <div class="detail">利润报表 API 真实数据</div>
+    </div>
+  </div>
+</section>
+
+<section id="remaining">
+  <h2>遗留问题 <span class="badge status-issue">5 ITEMS</span></h2>
+  <ul class="tips">
+    <li><span class="num">1</span><span>TikTok / Walmart / ML / Temu 利润报表 API 尚未在领星 OpenAPI 开放</span></li>
+    <li><span class="num">2</span><span>Walmart / ML 无 COGS 数据，需在领星后台录入</span></li>
+    <li><span class="num">3</span><span>Priority 2：广告报表 API（<code>/pb/openapi/newad/spCampaignReports</code>）日粒度数据</span></li>
+    <li><span class="num">4</span><span>Priority 3：自动导入会计 Excel（<code>raw-data/3月资产表格0402.xlsx</code>）</span></li>
+    <li><span class="num">5</span><span>Priority 4：对账视图（领星结算 vs 财务确认数）</span></li>
+  </ul>
+</section>
+
+<section id="files">
+  <h2>相关文件 <span class="badge status-info">FILES</span></h2>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="label">API 封装</div>
+      <div class="value"><code>analysis/lingxing_api.py</code></div>
+    </div>
+    <div class="info-card">
+      <div class="label">报表生成</div>
+      <div class="value"><code>analysis/generate_html_report.py</code></div>
+    </div>
+    <div class="info-card">
+      <div class="label">成本配置</div>
+      <div class="value"><code>analysis/costs_config.json</code></div>
+    </div>
+    <div class="info-card">
+      <div class="label">每日更新脚本</div>
+      <div class="value"><code>analysis/daily_update.sh</code></div>
+    </div>
+    <div class="info-card">
+      <div class="label">数据缓存</div>
+      <div class="value"><code>analysis/.lx_data_cache.json</code></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Howard · Powered by Claude
+</footer>
+
+</div>
+
+<script>
+document.querySelectorAll('.step-header').forEach(h => {
+  h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
+});
+</script>
+</body>
+</html>
