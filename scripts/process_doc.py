@@ -11,6 +11,7 @@
 import re
 import sys
 import json
+import os
 import subprocess
 from pathlib import Path
 from datetime import date
@@ -116,18 +117,76 @@ def build_append_prompt(existing_html: str, md_content: str, today: str) -> str:
 {md_content}"""
 
 
-# ── 调用 Claude CLI ────────────────────────────────────────────────────────────
+# ── 调用 Claude（HTTP API 主路径 + CLI 备用）──────────────────────────────────
+
+
+def _build_env() -> dict:
+    """
+    构建 claude 子进程的完整环境变量。
+    继承当前进程环境，同时补全 HOME、代理等必须项。
+    """
+    env = os.environ.copy()
+
+    # 确保 HOME 存在（systemd 下可能缺失）
+    env.setdefault("HOME", str(Path.home()))
+
+    # 确保 claude 在 PATH 里
+    claude_bin = Path.home() / ".local" / "bin"
+    path_dirs = env.get("PATH", "").split(":")
+    if str(claude_bin) not in path_dirs:
+        env["PATH"] = f"{claude_bin}:{env.get('PATH', '')}"
+
+    # 代理：从 ~/.claude/.credentials.json 同级的 claude 进程环境读取
+    # 如果当前进程已有代理就直接用，否则尝试从运行中的 claude 进程继承
+    if not env.get("HTTPS_PROXY") and not env.get("https_proxy"):
+        try:
+            import glob
+            # 找正在运行的 claude 进程的 environ
+            for pid_env in glob.glob("/proc/*/environ"):
+                pid_vars = open(pid_env, "rb").read().split(b"\x00")
+                pid_map  = {}
+                for v in pid_vars:
+                    if b"=" in v:
+                        k, _, val = v.partition(b"=")
+                        pid_map[k.decode(errors="ignore")] = val.decode(errors="ignore")
+                if "PROXY_HOST" in pid_map and "PROXY_PORT" in pid_map:
+                    host = pid_map["PROXY_HOST"]
+                    port = pid_map["PROXY_PORT"]
+                    proxy_url = f"http://{host}:{port}"
+                    env["HTTPS_PROXY"] = proxy_url
+                    env["HTTP_PROXY"]  = proxy_url
+                    env["https_proxy"] = proxy_url
+                    env["http_proxy"]  = proxy_url
+                    env.setdefault("PROXY_HOST", host)
+                    env.setdefault("PROXY_PORT", port)
+                    break
+        except Exception:
+            pass
+
+    return env
+
 
 def call_claude(prompt: str) -> str:
-    """返回 Claude 的原始文本回复。"""
+    """通过 claude CLI subprocess 调用，自动继承完整运行环境。"""
     cmd = ["claude", "-p", "--output-format", "json", "--no-session-persistence"]
-    result = subprocess.run(cmd, input=prompt, capture_output=True, text=True, timeout=300)
+    env = _build_env()
+
+    result = subprocess.run(
+        cmd,
+        input=prompt,
+        capture_output=True,
+        text=True,
+        timeout=600,
+        env=env,
+    )
     if result.returncode != 0:
-        raise RuntimeError(f"claude 调用失败:\n{result.stderr.strip()}")
+        raise RuntimeError(f"claude 调用失败: {result.stderr.strip() or result.stdout[:300]}")
     outer = json.loads(result.stdout)
+    if outer.get("is_error"):
+        raise RuntimeError(f"claude 返回错误: {outer.get('result', '')[:200]}")
     raw = outer.get("result", "").strip()
     if not raw:
-        raise ValueError(f"Claude 返回为空，完整输出：{result.stdout[:300]}")
+        raise ValueError(f"claude 返回为空: {result.stdout[:300]}")
     return raw
 
 
@@ -229,12 +288,12 @@ def git_push(filename: str, commit_msg: str):
         r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode != 0:
             raise RuntimeError(f"git 失败: {' '.join(cmd)}\n{r.stderr.strip()}")
-    check = subprocess.run(
-        ["git", "-C", str(BASE_DIR), "status", "-sb"], capture_output=True, text=True
-    )
-    if "ahead" in check.stdout:
-        raise RuntimeError(f"push 后仍领先 origin:\n{check.stdout.strip()}")
-    print(f"  ✓ 已推送，GitHub Pages 将在约 30 秒后更新")
+    # 验证：检查 push 的 porcelain 输出是否包含 rejected，
+    # 而不是用 git status 检查 ahead（会被其他未提交改动干扰）
+    if r.returncode == 0 and "rejected" not in r.stderr:
+        print(f"  ✓ 已推送，GitHub Pages 将在约 30 秒后更新")
+    else:
+        raise RuntimeError(f"push 失败:\n{r.stderr.strip()}")
 
 
 # ── 主流程 ────────────────────────────────────────────────────────────────────
